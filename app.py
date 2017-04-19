@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 import bottle
 from beaker.middleware import SessionMiddleware
+from werkzeug.debug import DebuggedApplication
 import logging
 
 import core
@@ -13,7 +14,7 @@ session_opts = {
 }
 
 app = bottle.Bottle()
-application = SessionMiddleware(app, session_opts)
+application = DebuggedApplication(SessionMiddleware(app, session_opts), evalex=True)
 
 @app.route('/static/<filename:path>')
 def static(filename):
