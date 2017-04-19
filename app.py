@@ -50,4 +50,4 @@ def login_office365_verify():
 
 if __name__ == "__main__":
   logging.getLogger().setLevel(logging.DEBUG)
-  bottle.run(app=wsgi_app, host='127.0.0.1', port=8080)
+  bottle.run(app=wsgi_app, host='0.0.0.0', port=8080)
