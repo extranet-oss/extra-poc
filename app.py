@@ -12,7 +12,7 @@ session_opts = {
   'session.auto': True
 }
 
-app = bottle.Bottle()
+app = application = bottle.Bottle()
 wsgi_app = SessionMiddleware(app, session_opts)
 
 @app.route('/static/<filename:path>')
