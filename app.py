@@ -12,8 +12,8 @@ session_opts = {
   'session.auto': True
 }
 
-app = application = bottle.Bottle()
-wsgi_app = SessionMiddleware(app, session_opts)
+app = bottle.Bottle()
+application = SessionMiddleware(app, session_opts)
 
 @app.route('/static/<filename:path>')
 def static(filename):
@@ -50,4 +50,4 @@ def login_office365_verify():
 
 if __name__ == "__main__":
   logging.getLogger().setLevel(logging.DEBUG)
-  bottle.run(app=wsgi_app, host='0.0.0.0', port=8080)
+  bottle.run(app=application, host='0.0.0.0', port=8080)
