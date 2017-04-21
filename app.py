@@ -47,7 +47,7 @@ def login_office365_verify():
     return "invalid state"
 
   token = core.office365.fetch_token(bottle.request.query.code)
-  return core.office365.get_from_graph('/me', token).json()
+  return core.office365.get_from_graph('/organization').json()
 
 if __name__ == "__main__":
   logging.getLogger().setLevel(logging.DEBUG)

@@ -23,11 +23,5 @@ def authorization_url():
 def fetch_token(code):
   return oauth.fetch_token(AUTHORITY_URL + TOKEN_ENDPOINT, code=code, client_secret=CLIENT_SECRET)
 
-def get_from_graph(res, token):
-  headers = {
-    'Authorization': oauth.token['token_type']+' '+oauth.token['access_token'],
-    'Content-Type': 'application/json'
-  }
-  print(headers)
-  #return requests.request('GET', GRAPH_URL+res+"?api-version="+GRAPH_VER, headers=headers)
-  return requests.request('GET', GRAPH_URL+"/"+GRAPH_VER+res, headers=headers)
+def get_from_graph(res):
+  return oauth.get(GRAPH_URL+"/"+GRAPH_VER+res)
