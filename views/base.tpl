@@ -12,7 +12,7 @@
   <body>
     % include
     <hr>
-    <p>Footer content</p>
+    <p><small>This is an early development product. Don't blame me for the design/bugs</small></p>
     <script src="/static/js/common.js" type="text/javascript"></script>
   </body>
 </html>
