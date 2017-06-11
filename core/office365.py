@@ -8,7 +8,7 @@ AUTHORITY_URL = 'https://login.microsoftonline.com/common'
 AUTHORIZE_ENDPOINT = '/oauth2/v2.0/authorize'
 TOKEN_ENDPOINT = '/oauth2/v2.0/token'
 RESOURCE_ID = 'https://graph.microsoft.com'
-SCOPES = ['user.read']
+SCOPES = ['User.Read']
 
 #GRAPH_URL = 'https://graph.windows.net'
 #GRAPH_VER = '1.6'
