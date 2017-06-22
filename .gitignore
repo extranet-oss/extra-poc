@@ -196,3 +196,4 @@ GitHub.sublime-settings
 # End of https://www.gitignore.io/api/emacs,python,sublimetext,linux
 
 data/
+/.well-known
