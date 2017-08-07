@@ -1,8 +1,12 @@
 from requests_oauthlib import OAuth2Session
 import requests
+import json
 
-CLIENT_ID = r'f48f64d6-b249-4fea-9f01-005389e640ab'
-CLIENT_SECRET = r'fCZptJNqVvcRO1FhCreVW0t'
+with open("./.office365_credentials.json", "r") as f:
+  credentials = json.loads(f.read())
+  CLIENT_ID = credentials['appid']
+  CLIENT_SECRET = credentials['secret']
+
 REDIRECT_URI = 'https://extranet.epi.codes/login/office365/auth/'
 AUTHORITY_URL = 'https://login.microsoftonline.com/common'
 AUTHORIZE_ENDPOINT = '/oauth2/v2.0/authorize'

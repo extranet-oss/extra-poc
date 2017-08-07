@@ -197,3 +197,5 @@ GitHub.sublime-settings
 
 data/
 /.well-known
+.office365_credentials.json
+.sass-cache/
