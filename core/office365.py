@@ -6,8 +6,9 @@ with open("./.office365_credentials.json", "r") as f:
   credentials = json.loads(f.read())
   CLIENT_ID = credentials['appid']
   CLIENT_SECRET = credentials['secret']
+  DOMAIN = credentials['domain']
 
-REDIRECT_URI = 'https://extranet.epi.codes/login/office365/auth/'
+REDIRECT_URI = 'https://'+DOMAIN+'/login/office365/auth/'
 AUTHORITY_URL = 'https://login.microsoftonline.com/common'
 AUTHORIZE_ENDPOINT = '/oauth2/v2.0/authorize'
 TOKEN_ENDPOINT = '/oauth2/v2.0/token'
