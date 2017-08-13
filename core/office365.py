@@ -7,6 +7,7 @@ with open("./.office365_credentials.json", "r") as f:
   CLIENT_ID = credentials['appid']
   CLIENT_SECRET = credentials['secret']
   DOMAIN = credentials['domain']
+  ORGANIZATIONS = credentials['authorized_organizations']
 
 REDIRECT_URI = 'https://'+DOMAIN+'/login/office365/auth/'
 AUTHORITY_URL = 'https://login.microsoftonline.com/common'

@@ -52,7 +52,11 @@ def login_office365_verify():
     'me': core.office365.get_from_graph('/me').json(),
     'organization': core.office365.get_from_graph('/organization').json()
   }
-  return data
+
+  for organization in data['organization']['value']:
+    if organization['id'] in core.office365.ORGANIZATIONS:
+      return "OK, you're from Epitech."
+  return "FAIL, you're not from Epitech"
 
 if __name__ == "__main__":
   logging.getLogger().setLevel(logging.DEBUG)
