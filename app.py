@@ -1,52 +1,34 @@
 #!/usr/bin/env python3
-import bottle
-from beaker.middleware import SessionMiddleware
-from werkzeug.debug import DebuggedApplication
-import logging
+from flask import Flask, session, request, render_template, redirect
 
 import core
 
-session_opts = {
-  'session.type': 'file',
-  'session.cookie_expires': 60 * 60 * 24 * 30,
-  'session.data_dir': './data',
-  'session.auto': True
-}
+app = Flask(__name__)
 
-app = bottle.Bottle()
-application = DebuggedApplication(SessionMiddleware(app, session_opts), evalex=True)
-
-@app.route('/static/<filename:path>')
-def static(filename):
-    return bottle.static_file(filename, root='./static')
+# This is a temporary hardcoded """"secret"""" key, straight from flask examples
+app.secret_key = 'A0Zr98j/3yX R~XHH!jmN]LWX/,?RT'
 
 @app.route('/')
-@bottle.view('index')
 def index():
-  return {}
+  return render_template('index.html')
 
 @app.route('/login/office365/')
 def login_office365_start():
-  session = bottle.request.environ.get('beaker.session')
   authorization_url, state = core.office365.authorization_url()
 
   session['office365.state'] = state;
-  session.save()
 
-  bottle.redirect(authorization_url)
-  return "Redirecting..."
+  return redirect(authorization_url)
 
 @app.route('/login/office365/auth/')
 def login_office365_verify():
-  session = bottle.request.environ.get('beaker.session')
+  if not request.args.get('code'):
+    return request.args.get('error')
 
-  if not bottle.request.query.code:
-    return bottle.request.query.error
-
-  if 'office365.state' not in session or session['office365.state'] != bottle.request.query.state:
+  if 'office365.state' not in session or session['office365.state'] != request.args.get('state'):
     return "invalid state"
 
-  token = core.office365.fetch_token(bottle.request.query.code)
+  token = core.office365.fetch_token(request.args.get('code'))
 
   data = {
     'me': core.office365.get_from_graph('/me').json(),
@@ -57,7 +39,3 @@ def login_office365_verify():
     if organization['id'] in core.office365.ORGANIZATIONS:
       return "OK, you're from Epitech."
   return "FAIL, you're not from Epitech"
-
-if __name__ == "__main__":
-  logging.getLogger().setLevel(logging.DEBUG)
-  bottle.run(app=application, host='0.0.0.0', port=8080)
