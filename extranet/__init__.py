@@ -11,14 +11,18 @@ app.config.from_object('extranet.config')
 # load database
 db = SQLAlchemy(app)
 
+# load database models
+import extranet.models
+
 # load modules
 from extranet.modules.auth import bp as auth_module
 
 # register modules
 app.register_blueprint(auth_module)
 
-# load hooks
+# load hooks & cli
 import extranet.hooks
+import extranet.cli
 
 
 # simple index page
