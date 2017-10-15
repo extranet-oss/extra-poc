@@ -1,1 +1,1 @@
-from extranet import app
+from extranet import app as application
