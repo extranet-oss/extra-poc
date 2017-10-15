@@ -1,6 +1,7 @@
 # import dependencies
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
+from flask_login import LoginManager
 
 # create WSGI application object
 app = Flask('extranet')
@@ -13,6 +14,9 @@ db = SQLAlchemy(app)
 
 # load database models
 import extranet.models
+
+# load login manager (named as User Session Manager)
+usm = LoginManager(app)
 
 # load modules
 from extranet.modules.auth import bp as auth_module

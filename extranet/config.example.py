@@ -1,6 +1,11 @@
 # session
 SECRET_KEY = 'Generate a 32char random string'
 SESSION_COOKIE_NAME = 'extranet_session'
+SESSION_COOKIE_HTTPONLY = True
+SESSION_COOKIE_SECURE = True
+REMEMBER_COOKIE_NAME = 'extranet_remember'
+REMEMBER_COOKIE_HTTPONLY = True
+REMEMBER_COOKIE_SECURE = True
 
 # database configuration
 SQLALCHEMY_DATABASE_URI = 'Database url'
