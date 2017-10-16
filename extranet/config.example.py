@@ -2,6 +2,7 @@
 SECRET_KEY = 'Generate a 32char random string'
 SESSION_COOKIE_NAME = 'extranet_session'
 SESSION_COOKIE_HTTPONLY = True
+SESSION_PROTECTION = 'basic'
 REMEMBER_COOKIE_NAME = 'extranet_remember'
 REMEMBER_COOKIE_HTTPONLY = True
 
