@@ -1,0 +1,7 @@
+{% extends "base.html" %}
+{% block content %}
+<h1>Login to Extranet</h1>
+<a href="{{ url_for('auth.office365', next='/') }}">Login with office365</a><br>
+<label><input type="checkbox" checked disabled> Remember me</label><br>
+By logging in I accept to sell my soul to roslyn.
+{% endblock %}

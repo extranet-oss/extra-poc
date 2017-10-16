@@ -2,7 +2,14 @@
 {% block content %}
 <h1>Extranet</h1>
 <p>Connect external services to your Epitech account.</p>
-<a href="{{ url_for('auth.office365') }}">Login with office365</a>
+{% if current_user.is_authenticated %}
+<hr>
+<strong>Hi {{ current_user.firstname }} {{ current_user.lastname }}! [{{ current_user.uuid }}]</strong><br>
+<a href="{{ url_for('auth.refresh') }}">Confirm session (delete session login before)</a><br>
+<a href="{{ url_for('auth.logout') }}">Logout</a><br>
+{% else %}
+<a href="{{ url_for('auth.login', next='/') }}">Login</a>
+{% endif %}
 <hr>
 <p>Get access to many external services, like EpiSchedule or EpiLeaderboards, easily with just one click.</p>
 <p>You can manage services connected to your account and review the data they have access to.</p>
