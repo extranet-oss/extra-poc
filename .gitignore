@@ -198,3 +198,4 @@ GitHub.sublime-settings
 /.well-known
 extranet/config.py
 .sass-cache/
+venv/
