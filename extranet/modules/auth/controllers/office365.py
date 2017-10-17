@@ -6,11 +6,14 @@ from extranet.modules.auth import bp
 from extranet.modules.auth.helpers import office365 as oauth
 from extranet.models.user import User
 from extranet.usm import no_login_required, no_fresh_login_required
+from extranet.utils import redirect_back
 
 def office365_redirect():
   authorization_url, state = oauth.authorization_url()
 
   session['office365.state'] = state;
+  session['office365.remember'] = request.args.get('remember') == "1";
+  session['office365.next'] = request.args.get('next');
 
   return redirect(authorization_url)
 
@@ -32,7 +35,7 @@ def office365_verify():
 
       confirm_login()
 
-      return redirect(url_for('index'))
+      return redirect_back(session['office365.next'], 'index')
     else:
       flash("Please confirm your session with the same office365 account.")
 
@@ -57,9 +60,9 @@ def office365_verify():
         db.session.add(user)
         db.session.commit()
 
-        login_user(user, remember=True, force=False, fresh=True)
+        login_user(user, remember=session['office365.remember'], fresh=True)
 
-        return redirect(url_for('index'))
+        return redirect_back(session['office365.next'], 'index')
 
     flash("Please login with a valid Epitech account.")
 

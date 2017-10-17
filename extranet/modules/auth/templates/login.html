@@ -1,7 +1,19 @@
 {% extends "base.html" %}
 {% block content %}
 <h1>Login to Extranet</h1>
-<a href="{{ url_for('auth.office365', next='/') }}">Login with office365</a><br>
-<label><input type="checkbox" checked disabled> Remember me</label><br>
+<a href="{{ url_for('auth.office365', next=request.args.get('next') or url_for('index')) }}&remember=1" id="link">Login with office365</a><br>
+<label><input type="checkbox" checked id="remember"> Remember me</label><br>
 By logging in I accept to sell my soul to roslyn.
+<script type="text/javascript">
+  window.addEventListener("DOMContentLoaded", function(){
+    var $link = document.querySelector("#link");
+    document.querySelector("#remember").addEventListener("change", function(){
+      var $this = this;
+
+      var href = $link.getAttribute("href").slice(0, -1);
+      href += $this.checked ? "1" : "0";
+      $link.setAttribute("href", href);
+    })
+  })
+</script>
 {% endblock %}

@@ -1,5 +1,5 @@
 {% extends "base.html" %}
 {% block content %}
 <h1>Hi {{ current_user.firstname }} {{ current_user.lastname }}, please confirm session</h1>
-<a href="{{ url_for('auth.office365', next='/') }}">Confirm with office365</a>
+<a href="{{ url_for('auth.office365', next=request.args.get('next') or url_for('index')) }}">Confirm with office365</a>
 {% endblock %}
