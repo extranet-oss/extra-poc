@@ -25,6 +25,6 @@ def office365_tokengetter(token = None):
   if token is not None:
     return token
   elif current_user.is_authenticated:
-    return current_user.get_office365_token()
+    return current_user.office365_token
   else:
     return None

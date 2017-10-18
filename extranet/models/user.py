@@ -2,9 +2,9 @@ import uuid
 import json
 
 from extranet import db
-from extranet.models.base import Base
+from extranet.models._templates import Dated
 
-class User(Base):
+class User(Dated):
 
   # uuid
   uuid = db.Column(db.String(36), index=True, unique=True, nullable=False)
@@ -19,7 +19,7 @@ class User(Base):
 
   # office365 user info
   office365_uid = db.Column(db.String(36), unique=True)
-  office365_token = db.Column(db.Text)
+  _office365_token = db.Column(db.Text, name='office365_token')
 
   # intranet user info
   intra_uid = db.Column(db.String(320), unique=True)
@@ -36,30 +36,30 @@ class User(Base):
     self.username = self.email.split('@')[0]
     self.realm = self.email.split('@')[1]
 
-  # used for usm
+  # usm stuff
   @property
   def is_active(self):
       return self.active
 
-  # used for usm
   @property
   def is_authenticated(self):
       return True
 
-  # used for usm
   @property
   def is_anonymous(self):
       return False
 
-  # used for usm
   def get_id(self):
     return self.uuid
 
-  def set_office365_token(self, token):
-    self.office365_token = json.dumps(token)
+  # office tokens
+  @property
+  def office365_token(self):
+    return json.loads(self._office365_token)
 
-  def get_office365_token(self):
-    return json.loads(self.office365_token)
+  @office365_token.setter
+  def office365_token(self, token):
+    self._office365_token = json.dumps(token)
 
   def __repr__(self):
     return '<User %r>' % self.id

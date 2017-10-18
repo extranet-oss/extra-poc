@@ -58,7 +58,7 @@ def office365_authorized():
     if current_user.office365_uid == me.data['id']:
 
       # everything ok, save new token & confirm login
-      current_user.set_office365_token(token)
+      current_user.office365_token = token
 
       db.session.add(current_user)
       db.session.commit()
@@ -93,7 +93,7 @@ def office365_authorized():
           user.office365_uid = me.data['id']
 
         # everything ok, save token & login
-        user.set_office365_token(token)
+        user.office365_token = token
 
         db.session.add(user)
         db.session.commit()

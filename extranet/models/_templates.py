@@ -10,6 +10,10 @@ class Base(db.Model):
   #id
   id = db.Column(db.Integer, primary_key=True)
 
+class Dated(Base):
+
+  __abstract__ = True
+
   # timestamps
   ctime = db.Column(db.DateTime, nullable=False, default=db.func.current_timestamp())
   mtime = db.Column(db.DateTime, nullable=False, default=db.func.current_timestamp(),
