@@ -12,7 +12,7 @@ def user_loader(uuid):
   return User.query.filter_by(uuid=uuid).first()
 
 # for views that require no login at all
-def no_login_required(func):
+def anonymous_required(func):
   @wraps(func)
   def decorated_view(*args, **kwargs):
     if usm._login_disabled:
@@ -23,7 +23,7 @@ def no_login_required(func):
   return decorated_view
 
 # for views that require a non-fresh login
-def no_fresh_login_required(func):
+def dirty_required(func):
   @wraps(func)
   def decorated_view(*args, **kwargs):
     if usm._login_disabled:
@@ -33,4 +33,17 @@ def no_fresh_login_required(func):
     elif login_fresh():
       return abort(401)
     return func(*args, **kwargs)
+  return decorated_view
+
+# for views that either require anonymous or dirty login
+def anonymous_or_dirty_required(func):
+  @wraps(func)
+  def decorated_view(*args, **kwargs):
+    if usm._login_disabled:
+      return func(*args, **kwargs)
+    elif not current_user.is_authenticated:
+      return func(*args, **kwargs)
+    elif not login_fresh():
+      return func(*args, **kwargs)
+    return abort(401)
   return decorated_view

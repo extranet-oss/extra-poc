@@ -8,7 +8,7 @@
 <a href="{{ url_for('auth.refresh') }}">Confirm session (delete session login before)</a><br>
 <a href="{{ url_for('auth.logout') }}">Logout</a><br>
 {% else %}
-<a href="{{ url_for('auth.login', next='/') }}">Login</a>
+<a href="{{ url_for('auth.login', next=url_for('index')) }}">Login</a>
 {% endif %}
 <hr>
 <p>Get access to many external services, like EpiSchedule or EpiLeaderboards, easily with just one click.</p>

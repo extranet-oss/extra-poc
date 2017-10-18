@@ -1,28 +1,30 @@
-from flask import url_for
-from requests_oauthlib import OAuth2Session
+from flask_oauthlib.client import OAuth
+from flask_login import current_user
 
 from extranet import app
 
-REDIRECT_URI = 'https://' + app.config['OFFICE365_DOMAIN'] + '/auth/office365/'
-AUTHORITY_URL = 'https://login.microsoftonline.com/common'
-AUTHORIZE_ENDPOINT = '/oauth2/v2.0/authorize'
-TOKEN_ENDPOINT = '/oauth2/v2.0/token'
-RESOURCE_ID = 'https://graph.microsoft.com'
-SCOPES = [ 'User.Read' ]
-GRAPH_VER = 'v1.0'
-GRAPH_URL = 'https://graph.microsoft.com/' + GRAPH_VER + '/'
+oauth = OAuth()
+client = oauth.remote_app(
+  'office365',
+  request_token_params = {
+    'scope': 'User.Read'
+  },
+  base_url = 'https://graph.microsoft.com/v1.0/',
+  access_token_method = 'POST',
+  access_token_url = 'https://login.microsoftonline.com/common/oauth2/v2.0/token',
+  authorize_url = 'https://login.microsoftonline.com/common/oauth2/v2.0/authorize',
+  app_key = 'OFFICE365'
+)
 
-client = OAuth2Session(app.config['OFFICE365_CLIENT_ID'],
-                       redirect_uri = REDIRECT_URI,
-                       scope = SCOPES)
+def build_external_url(url):
+  # forcing https but fuck that
+  return "https://" + app.config['OFFICE365_DOMAIN'] + url
 
-def authorization_url():
-  return client.authorization_url(AUTHORITY_URL + AUTHORIZE_ENDPOINT)
-
-def fetch_token(code):
-  return client.fetch_token(AUTHORITY_URL + TOKEN_ENDPOINT,
-                            code = code,
-                            client_secret = app.config['OFFICE365_CLIENT_SECRET'])
-
-def get_from_graph(res):
-  return client.get(GRAPH_URL + res)
+@client.tokengetter
+def office365_tokengetter(token = None):
+  if token is not None:
+    return token
+  elif current_user.is_authenticated:
+    return current_user.get_office365_token()
+  else:
+    return None

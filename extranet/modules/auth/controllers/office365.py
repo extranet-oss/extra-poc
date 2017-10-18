@@ -3,32 +3,52 @@ from flask_login import login_user, logout_user, login_required, confirm_login, 
 
 from extranet import app, db
 from extranet.modules.auth import bp
-from extranet.modules.auth.helpers import office365 as oauth
+from extranet.modules.auth.helpers.office365 import build_external_url
+from extranet.modules.auth.helpers.office365 import client as office365_client
 from extranet.models.user import User
-from extranet.usm import no_login_required, no_fresh_login_required
+from extranet.usm import anonymous_required, dirty_required, anonymous_or_dirty_required
 from extranet.utils import redirect_back
 
-def office365_redirect():
-  authorization_url, state = oauth.authorization_url()
+@bp.route('/office365/')
+@anonymous_or_dirty_required
+def office365():
+  # save parameters to session as office365 forbids parameters in return url
+  session['office365.remember'] = request.args.get('remember') == "1"
+  session['office365.next'] = request.args.get('next')
+  session['office365.prev'] = 'auth.refresh' if current_user.is_authenticated else 'auth.login'
 
-  session['office365.state'] = state;
-  session['office365.remember'] = request.args.get('remember') == "1";
-  session['office365.next'] = request.args.get('next');
+  return office365_client.authorize(callback=build_external_url(url_for('auth.office365_authorized')))
 
-  return redirect(authorization_url)
+@bp.route('/office365/authorized/')
+@anonymous_or_dirty_required
+def office365_authorized():
+  # get response
+  resp = office365_client.authorized_response()
 
-def office365_verify():
-  if 'office365.state' not in session or session['office365.state'] != request.args.get('state'):
-    return "invalid state"
+  # check if response is valid
+  if resp is None or not 'access_token' in resp:
+    flash('You denied the request to sign in.')
+    return redirect(url_for(session['office365.prev']))
 
-  token = oauth.fetch_token(request.args.get('code'))
 
-  me = oauth.get_from_graph('/me').json()
+  # define token for API requests
+  token = (resp['access_token'], '')
+
+  # fetch user info
+  me = office365_client.get('me', token=token)
+  if me.status != 200:
+    flash("Failed to retrieve user data.")
+    return redirect(url_for(session['office365.prev']))
+
 
   # if user is already logged in, confirm session
   if current_user.is_authenticated:
-    if current_user.office365_uid == me['id']:
-      current_user.office365_token = token
+
+    # verify if user logged with the same account
+    if current_user.office365_uid == me.data['id']:
+
+      # everything ok, save new token & confirm login
+      current_user.set_office365_token(token)
 
       db.session.add(current_user)
       db.session.commit()
@@ -38,24 +58,32 @@ def office365_verify():
       return redirect_back(session['office365.next'], 'index')
     else:
       flash("Please confirm your session with the same office365 account.")
+      return redirect(url_for(session['office365.prev']))
 
-      return redirect(url_for('auth.refresh'))
 
+  # no user logged in
   else:
 
-    organizations = oauth.get_from_graph('/organization').json()
+    # get organizations membership info
+    organization = office365_client.get('organization', token=token)
+    if organization.status != 200:
+      flash("Failed to retrieve user data.")
+      return redirect(url_for(session['office365.prev']))
 
-    for organization in organizations['value']:
-      if organization['id'] in app.config['OFFICE365_ORGANIZATIONS']:
+    # check if we got Epitech
+    for org in organization.data['value']:
+      if org['id'] in app.config['OFFICE365_ORGANIZATIONS']:
 
-        user = User.query.filter_by(office365_uid=me['id']).first()
+        user = User.query.filter_by(office365_uid=me.data['id']).first()
 
+        # create user if not already registered
         if not user:
 
-          user = User(me['mail'], me['givenName'], me['surname'])
-          user.office365_uid = me['id']
+          user = User(me.data['mail'], me.data['givenName'], me.data['surname'])
+          user.office365_uid = me.data['id']
 
-        user.office365_token = token
+        # everything ok, save token & login
+        user.set_office365_token(token)
 
         db.session.add(user)
         db.session.commit()
@@ -65,23 +93,15 @@ def office365_verify():
         return redirect_back(session['office365.next'], 'index')
 
     flash("Please login with a valid Epitech account.")
-
-  return redirect(url_for('auth.login'))
-
-@bp.route('/office365/')
-def office365():
-  if not request.args.get('code'):
-    return office365_redirect()
-  else:
-    return office365_verify()
+    return redirect(url_for(session['office365.prev']))
 
 @bp.route('/')
-@no_login_required
+@anonymous_required
 def login():
   return render_template('login.html')
 
 @bp.route('/refresh/')
-@no_fresh_login_required
+@dirty_required
 def refresh():
   return render_template('refresh.html')
 

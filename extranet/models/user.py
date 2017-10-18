@@ -1,4 +1,5 @@
 import uuid
+import json
 
 from extranet import db
 from extranet.models.base import Base
@@ -53,6 +54,12 @@ class User(Base):
   # used for usm
   def get_id(self):
     return self.uuid
+
+  def set_office365_token(self, token):
+    self.office365_token = json.dumps(token)
+
+  def get_office365_token(self):
+    return json.loads(self.office365_token)
 
   def __repr__(self):
     return '<User %r>' % self.id
