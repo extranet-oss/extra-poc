@@ -1,5 +1,6 @@
 from flask import session, request, redirect, url_for, render_template, flash
 from flask_login import login_user, logout_user, login_required, confirm_login, current_user
+from werkzeug.security import gen_salt
 
 from extranet import app, db
 from extranet.modules.auth import bp
@@ -17,11 +18,20 @@ def office365():
   session['office365.next'] = request.args.get('next')
   session['office365.prev'] = 'auth.refresh' if current_user.is_authenticated else 'auth.login'
 
-  return office365_client.authorize(callback=build_external_url(url_for('auth.office365_authorized')))
+  # prevent csrf attacks
+  session['office365.state'] = gen_salt(32)
+
+  return office365_client.authorize(callback=build_external_url(url_for('auth.office365_authorized')),
+                                    state=session['office365.state'])
 
 @bp.route('/office365/authorized/')
 @anonymous_or_dirty_required
 def office365_authorized():
+  # verify state
+  if 'office365.state' not in session or session['office365.state'] != request.args.get('state'):
+    flash('Invalid state.')
+    return redirect(url_for(session['office365.prev']))
+
   # get response
   resp = office365_client.authorized_response()
 
