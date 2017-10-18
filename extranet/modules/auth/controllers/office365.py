@@ -1,5 +1,5 @@
-from flask import session, request, redirect, url_for, render_template, flash
-from flask_login import login_user, logout_user, login_required, confirm_login, current_user
+from flask import session, request, redirect, url_for, flash
+from flask_login import login_user, confirm_login, current_user
 from werkzeug.security import gen_salt
 
 from extranet import app, db
@@ -7,7 +7,7 @@ from extranet.modules.auth import bp
 from extranet.modules.auth.helpers.office365 import build_external_url
 from extranet.modules.auth.helpers.office365 import client as office365_client
 from extranet.models.user import User
-from extranet.usm import anonymous_required, dirty_required, anonymous_or_dirty_required
+from extranet.usm import anonymous_or_dirty_required
 from extranet.utils import redirect_back
 
 @bp.route('/office365/')
@@ -104,19 +104,3 @@ def office365_authorized():
 
     flash("Please login with a valid Epitech account.")
     return redirect(url_for(session['office365.prev']))
-
-@bp.route('/')
-@anonymous_required
-def login():
-  return render_template('login.html')
-
-@bp.route('/refresh/')
-@dirty_required
-def refresh():
-  return render_template('refresh.html')
-
-@bp.route('/logout/')
-@login_required
-def logout():
-  logout_user()
-  return redirect(url_for('index'))
