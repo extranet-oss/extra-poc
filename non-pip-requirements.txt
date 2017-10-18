@@ -1,0 +1,4 @@
+mariadb
+redis
+nginx
+uwsgi

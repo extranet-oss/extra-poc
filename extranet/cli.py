@@ -1,4 +1,4 @@
-from extranet import app, db
+from extranet import app, db, cache
 
 @app.cli.command('createdb')
 def createdb():
@@ -10,4 +10,10 @@ def createdb():
 def dropdb():
   print('Dropping database...')
   db.drop_all()
+  print('Done.')
+
+@app.cli.command('clearcache')
+def clearcache():
+  print('Clearing cache...')
+  cache.clear()
   print('Done.')

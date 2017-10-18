@@ -17,3 +17,8 @@ OFFICE365_DOMAIN = 'Domain'
 OFFICE365_ORGANIZATIONS = [
   'Organization ID'
 ]
+
+# cache config
+CACHE_TYPE = 'redis'
+CACHE_REDIS_URL = 'Redis url'
+CACHE_KEY_PREFIX = 'extranet'
