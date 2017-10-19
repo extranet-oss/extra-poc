@@ -10,7 +10,7 @@ from extranet.models.user import User
 from extranet.usm import anonymous_or_dirty_required
 from extranet.utils import redirect_back
 
-@bp.route('/office365/')
+@bp.route('/office365')
 @anonymous_or_dirty_required
 def office365():
   # save parameters to session as office365 forbids parameters in return url
@@ -24,7 +24,7 @@ def office365():
   return office365_client.authorize(callback=build_external_url(url_for('auth.office365_authorized')),
                                     state=session['office365.state'])
 
-@bp.route('/office365/authorized/')
+@bp.route('/office365/authorized')
 @anonymous_or_dirty_required
 def office365_authorized():
   # verify state
