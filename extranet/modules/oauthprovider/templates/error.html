@@ -1,0 +1,9 @@
+{% extends "base.html" %}
+{% block content %}
+<h1>Oops! This isn't working.</h1>
+<p>The app you came from sent a bad request, sorry about that. You can
+<a href="#" onclick="history.back();return false;">go back</a> or <a href="#" onclick="window.close();return false;">close this page</a></p>
+{% if request.args.get('error') %}
+<small>{{ request.args.get('error') }}: {{ request.args.get('error_description') }}</small>
+{% endif %}
+{% endblock %}

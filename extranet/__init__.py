@@ -23,9 +23,11 @@ cache = Cache(app)
 
 # load modules
 from extranet.modules.auth import bp as auth_module
+from extranet.modules.oauthprovider import bp as oauthprovider_module
 
 # register modules
 app.register_blueprint(auth_module)
+app.register_blueprint(oauthprovider_module)
 
 # load hooks & cli
 import extranet.hooks
