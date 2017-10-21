@@ -1,7 +1,8 @@
 from flask import render_template, request, flash, session
-from flask_login import fresh_login_required, current_user
+from flask_login import login_required, current_user, login_fresh
 from werkzeug.security import gen_salt
 
+from extranet import usm
 from extranet.modules.oauthprovider import bp, provider
 from extranet.models.oauth_app import OauthApp
 from extranet.models.oauth_token import OauthToken
@@ -17,12 +18,16 @@ def render_authorize(*args, **kwargs):
   return render_template('authorize.html', **kwargs)
 
 @bp.route('/authorize', methods=['GET', 'POST'])
-@fresh_login_required
+@login_required
 @provider.authorize_handler
 def authorize(*args, **kwargs):
   # bypass accept/deny form if already accepted (has token)
   if OauthToken.query.filter_by(user_id=current_user.id).first() is not None:
     return True
+
+  # confirm login to access autorize/deny dialog
+  if not login_fresh():
+    return usm.needs_refresh()
 
   # render accept/deny if GET request
   if request.method == 'GET':
