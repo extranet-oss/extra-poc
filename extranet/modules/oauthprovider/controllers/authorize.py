@@ -3,7 +3,8 @@ from flask_login import login_required, current_user, login_fresh
 from werkzeug.security import gen_salt
 
 from extranet import usm
-from extranet.modules.oauthprovider import bp, provider
+from extranet.modules.oauthprovider import bp
+from extranet.connections.extranet import provider as extranet_provider
 from extranet.models.oauth_app import OauthApp
 from extranet.models.oauth_token import OauthToken
 
@@ -19,7 +20,7 @@ def render_authorize(*args, **kwargs):
 
 @bp.route('/authorize', methods=['GET', 'POST'])
 @login_required
-@provider.authorize_handler
+@extranet_provider.authorize_handler
 def authorize(*args, **kwargs):
   # bypass accept/deny form if already accepted (has token)
   if OauthToken.query.get(current_user.id) is not None:

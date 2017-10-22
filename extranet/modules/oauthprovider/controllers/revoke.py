@@ -1,6 +1,7 @@
-from extranet.modules.oauthprovider import bp, provider
+from extranet.modules.oauthprovider import bp
+from extranet.connections.extranet import provider as extranet_provider
 
 @bp.route('/revoke', methods=['POST'])
-@provider.revoke_handler
+@extranet_provider.revoke_handler
 def revoke_token():
   pass

@@ -4,8 +4,8 @@ from werkzeug.security import gen_salt
 
 from extranet import app, db
 from extranet.modules.auth import bp
-from extranet.modules.auth.helpers.office365 import build_external_url
-from extranet.modules.auth.helpers.office365 import client as office365_client
+from extranet.connections.office365 import client as office365_client
+from extranet.connections.office365 import build_external_url
 from extranet.models.user import User
 from extranet.usm import anonymous_or_dirty_required
 from extranet.utils import redirect_back

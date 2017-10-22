@@ -21,6 +21,9 @@ from extranet.usm import usm
 # load cache
 cache = Cache(app)
 
+# load external connections
+import extranet.connections
+
 # load modules
 from extranet.modules.auth import bp as auth_module
 from extranet.modules.oauthprovider import bp as oauthprovider_module
