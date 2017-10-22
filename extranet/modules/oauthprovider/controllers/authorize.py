@@ -9,7 +9,7 @@ from extranet.models.oauth_token import OauthToken
 
 def render_authorize(*args, **kwargs):
   app_id = kwargs.get('client_id')
-  app = OauthApp.query.filter_by(client_id=app_id).first()
+  app = OauthApp.query.get(app_id)
   kwargs['app'] = app
 
   session['oauthprovider.snitch'] = gen_salt(32)
@@ -22,7 +22,7 @@ def render_authorize(*args, **kwargs):
 @provider.authorize_handler
 def authorize(*args, **kwargs):
   # bypass accept/deny form if already accepted (has token)
-  if OauthToken.query.filter_by(user_id=current_user.id).first() is not None:
+  if OauthToken.query.get(current_user.id) is not None:
     return True
 
   # confirm login to access autorize/deny dialog

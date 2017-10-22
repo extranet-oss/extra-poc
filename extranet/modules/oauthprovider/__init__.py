@@ -21,7 +21,7 @@ provider = OAuth2Provider(app)
 # configure stores
 bind_sqlalchemy(provider, db.session, user=User, client=OauthApp, token=OauthToken)
 def current_user_func():
-  return User.query.filter_by(id=current_user.id).first()
+  return User.query.get(current_user.id)
 bind_cache_grant(app, provider, current_user_func)
 
 # load controllers
