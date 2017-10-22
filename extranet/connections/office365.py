@@ -1,3 +1,4 @@
+from flask import request
 from flask_oauthlib.client import OAuth
 from flask_login import current_user
 
@@ -24,7 +25,13 @@ def build_external_url(url):
 def office365_tokengetter(token = None):
   if token is not None:
     return token
-  elif current_user.is_authenticated:
+
+  try:
+    return request.oauth.user.office365_token
+  except AttributeError:
+    pass
+
+  if current_user.is_authenticated:
     return current_user.office365_token
-  else:
-    return None
+
+  return None
