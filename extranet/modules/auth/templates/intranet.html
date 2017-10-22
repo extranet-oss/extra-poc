@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+{% block content %}
+<h1>Welcome to extranet, please connect your intranet account</h1>
+<p>This step is mandatory in order to use the Extranet service.</p>
+<p>Please copy the autologin link in the text field below. It will give us access to your intranet account. If you don't want us to have write rights on your account, please login on the intranet with your parent's account and give us the read-only autologin link from their account.</p>
+<form action="" method="post">
+  <input type="text" name="link" placeholder="https://intra.epitech.eu/auth-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx">
+  <button name="confirm" value="yes" type="submit">Continue</button><br>
+  <button name="confirm" value="no" type="submit">I don't want to do this</button> <= You will be logged out and your account will be deleted
+</form>
+<iframe src="https://intra.epitech.eu/admin/autolog" sandbox="allow-same-origin allow-scripts allow-popups allow-popups-to-escape-sandbox allow-forms" style="width: 100%;height: 579px;"></iframe>
+{% endblock %}
