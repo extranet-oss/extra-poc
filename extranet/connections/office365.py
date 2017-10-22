@@ -17,10 +17,6 @@ client = oauth.remote_app(
   app_key = 'OFFICE365'
 )
 
-def build_external_url(url):
-  # forcing https but fuck that
-  return "https://" + app.config['OFFICE365_DOMAIN'] + url
-
 @client.tokengetter
 def office365_tokengetter(token = None):
   if token is not None:

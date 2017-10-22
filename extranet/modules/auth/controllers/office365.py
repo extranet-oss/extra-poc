@@ -5,10 +5,9 @@ from werkzeug.security import gen_salt
 from extranet import app, db
 from extranet.modules.auth import bp
 from extranet.connections.office365 import client as office365_client
-from extranet.connections.office365 import build_external_url
 from extranet.models.user import User
 from extranet.usm import anonymous_or_dirty_required
-from extranet.utils import redirect_back
+from extranet.utils import redirect_back, external_url
 
 @bp.route('/office365')
 @anonymous_or_dirty_required
@@ -21,7 +20,7 @@ def office365():
   # prevent csrf attacks
   session['office365.state'] = gen_salt(32)
 
-  return office365_client.authorize(callback=build_external_url(url_for('auth.office365_authorized')),
+  return office365_client.authorize(callback=external_url(url_for('auth.office365_authorized')),
                                     state=session['office365.state'])
 
 @bp.route('/office365/authorized')

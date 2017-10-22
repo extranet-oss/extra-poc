@@ -1,6 +1,8 @@
 from urllib.parse import urlparse, urljoin
 from flask import request, url_for, redirect
 
+from extranet import app
+
 def version_tostring(version):
   string = ''
   for num in version:
@@ -17,3 +19,7 @@ def redirect_back(target, default, **values):
   if not target or not is_safe_url(target):
     target = url_for(default, **values)
   return redirect(target)
+
+def external_url(url):
+  # forcing https but fuck that
+  return "https://" + app.config['DOMAIN'] + url
