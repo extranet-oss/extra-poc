@@ -1,6 +1,7 @@
 {% extends "base.html" %}
 {% block content %}
 <h1>Hello {{ current_user.firstname }}, connect to {{ app.name }}</h1>
+<a href="{{ url_for('auth.logout', next=url_for('auth.office365', next=request.full_path)) }}">Switch user</a>
 
 <form action="" method="post">
   not implemented scopes yet, but you can click the big buttons ->

@@ -10,11 +10,12 @@ from extranet.models.oauth_token import OauthToken
 
 def render_authorize(*args, **kwargs):
   app_id = kwargs.get('client_id')
-  app = OauthApp.query.get(app_id)
+  app = OauthApp.query.filter_by(client_id=app_id).first()
   kwargs['app'] = app
 
   session['oauthprovider.snitch'] = gen_salt(32)
   kwargs['snitch'] = session['oauthprovider.snitch']
+  kwargs['request'] = request
 
   return render_template('authorize.html', **kwargs)
 
@@ -32,12 +33,12 @@ def authorize(*args, **kwargs):
 
   # render accept/deny if GET request
   if request.method == 'GET':
-    return render_authorize(**kwargs)
+    return render_authorize(*args, **kwargs)
 
   # verify POST request legitimacy
   if 'oauthprovider.snitch' not in session or session['oauthprovider.snitch'] != request.form.get('snitch'):
     flash('Something went wrong, please retry.')
-    return render_authorize(**kwargs)
+    return render_authorize(*args, **kwargs)
 
   confirm = request.form.get('confirm', 'no')
   return confirm == 'yes'
