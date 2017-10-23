@@ -5,6 +5,7 @@ from werkzeug.security import gen_salt
 from extranet import usm
 from extranet.modules.oauthprovider import bp
 from extranet.connections.extranet import provider as extranet_provider
+from extranet.connections.extranet import scopes as defined_scopes
 from extranet.models.oauth_app import OauthApp
 from extranet.models.oauth_token import OauthToken
 
@@ -16,6 +17,8 @@ def render_authorize(*args, **kwargs):
   session['oauthprovider.snitch'] = gen_salt(32)
   kwargs['snitch'] = session['oauthprovider.snitch']
   kwargs['request'] = request
+
+  kwargs['defined_scopes'] = defined_scopes
 
   return render_template('authorize.html', **kwargs)
 
