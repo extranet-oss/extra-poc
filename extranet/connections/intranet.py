@@ -1,4 +1,5 @@
-from flask import url_for, request, redirect
+from functools import wraps
+from flask import url_for, request, redirect, abort
 from flask_login import current_user
 import requests
 
@@ -105,3 +106,11 @@ def has_token_checker():
     return current_user.intra_token is not None
 
   return None
+
+def no_token_required(func):
+  @wraps(func)
+  def decorated_view(*args, **kwargs):
+    if has_token_checker():
+      return abort(401)
+    return func(*args, **kwargs)
+  return decorated_view

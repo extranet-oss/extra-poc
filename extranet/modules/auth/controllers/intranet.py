@@ -5,6 +5,7 @@ import re
 from extranet import db
 from extranet.modules.auth import bp
 from extranet.connections.intranet import client as intranet_client
+from extranet.connections.intranet import no_token_required
 from extranet.utils import redirect_back
 
 autologin_regex = re.compile('https://intra.epitech.eu/auth-([a-z0-9]{40})')
@@ -14,6 +15,7 @@ def render_intranet():
 
 @bp.route('/intranet', methods=['GET', 'POST'])
 @fresh_login_required
+@no_token_required
 def intranet():
   if request.method == 'GET':
     return render_intranet()
