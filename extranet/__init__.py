@@ -27,10 +27,12 @@ import extranet.connections
 # load modules
 from extranet.modules.auth import bp as auth_module
 from extranet.modules.oauthprovider import bp as oauthprovider_module
+from extranet.modules.api.v0 import bp as api_v0_module
 
 # register modules
 app.register_blueprint(auth_module)
 app.register_blueprint(oauthprovider_module)
+app.register_blueprint(api_v0_module)
 
 # load hooks & cli
 import extranet.hooks

@@ -36,7 +36,7 @@ class OauthToken(Base):
 
   @property
   def scopes(self):
-    return json.loads(self._default_scopes)
+    return json.loads(self._scopes)
 
   @scopes.setter
   def scopes(self, scopes):
