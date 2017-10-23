@@ -21,10 +21,10 @@ def intranet():
     return render_intranet()
 
   # check if user confirmed form
-  confirm = request.form.get('confirm')
-  if confirm is None:
+  if request.form.get('confirm') is None:
     flash('Something went wrong, please retry.')
     return render_intranet()
+  confirm = request.form.get('confirm') == 'yes'
 
   if not confirm:
     # delete account, logout
