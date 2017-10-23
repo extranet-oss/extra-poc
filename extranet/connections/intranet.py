@@ -19,6 +19,11 @@ class Intranet():
   base_url = 'https://intra.epitech.eu/auth-'
   useragent = 'Mozilla/5.0 (compatible; ' + APP_NAME + '/' + version_tostring(APP_VERSION) + '; +' + external_url('/bot') + ')'
 
+  cookies = {
+    'language': 'en',
+    'tz': 'UTC'
+  }
+
   def __init__(self, app=None):
     self._token_getter = None
     self._has_token_checker = None
@@ -58,7 +63,7 @@ class Intranet():
 
     params['format'] = format
 
-    return requests.request(method, target, params=params, data=data, headers=headers)
+    return requests.request(method, target, params=params, data=data, headers=headers, cookies=self.cookies)
 
   def token_getter(self, f):
     self._token_getter = f
