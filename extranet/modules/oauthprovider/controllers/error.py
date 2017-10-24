@@ -4,4 +4,4 @@ from extranet.modules.oauthprovider import bp
 
 @bp.route('/error')
 def error():
-  return render_template('error.html')
+  return render_template('error.html'), 400
