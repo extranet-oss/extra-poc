@@ -27,7 +27,7 @@ def render_authorize(*args, **kwargs):
 @extranet_provider.authorize_handler
 def authorize(*args, **kwargs):
   # bypass accept/deny form if already accepted (has token)
-  if OauthToken.query.get(current_user.id) is not None:
+  if OauthToken.query.filter_by(user_id=current_user.id).first() is not None:
     return True
 
   # confirm login to access autorize/deny dialog
