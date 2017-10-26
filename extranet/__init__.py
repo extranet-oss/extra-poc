@@ -1,6 +1,5 @@
 # import dependencies
 from flask import Flask
-from flask_sqlalchemy import SQLAlchemy
 from flask_cache import Cache
 
 # create WSGI application object
@@ -10,7 +9,7 @@ app = Flask('extranet')
 app.config.from_object('extranet.config')
 
 # load database
-db = SQLAlchemy(app)
+from extranet.db import db
 
 # load database models
 import extranet.models
