@@ -5,8 +5,7 @@ from flask_oauthlib.contrib.oauth2 import bind_cache_grant, bind_sqlalchemy
 
 from extranet import app, db
 from extranet.models.user import User
-from extranet.models.oauth_app import OauthApp
-from extranet.models.oauth_token import OauthToken
+from extranet.models.oauth import OauthApp, OauthToken
 
 # configure oauth provider
 provider = OAuth2Provider(app)

@@ -6,8 +6,7 @@ from extranet import usm
 from extranet.modules.oauthprovider import bp
 from extranet.connections.extranet import provider as extranet_provider
 from extranet.connections.extranet import scopes as defined_scopes
-from extranet.models.oauth_app import OauthApp
-from extranet.models.oauth_token import OauthToken
+from extranet.models.oauth import OauthApp, OauthToken
 
 def render_authorize(*args, **kwargs):
   app_id = kwargs.get('client_id')
