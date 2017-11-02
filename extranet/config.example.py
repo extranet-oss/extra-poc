@@ -24,3 +24,6 @@ OFFICE365_ORGANIZATIONS = [
 CACHE_TYPE = 'redis'
 CACHE_REDIS_URL = 'Redis url'
 CACHE_KEY_PREFIX = 'extranet'
+
+# intra crawler config
+CRAWLER_DEFAULT_TOKEN = 'Intranet token'
