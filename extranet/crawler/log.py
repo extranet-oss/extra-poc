@@ -40,11 +40,7 @@ maxages = {
 # - if the latest succeeded log is recent enough, ignoring failed logs
 # - if the latest log represents a wip crawling procedure
 def needs_crawling(type):
-  latest = CrawlerLog.query
-           .filter_by(type=type)
-           .filter(CrawlerLog.status != 0)
-           .order_by(CrawlerLog.time.desc())
-           .first()
+  latest = CrawlerLog.query.filter_by(type=type).filter(CrawlerLog.status != 0).order_by(CrawlerLog.time.desc()).first()
 
   # No crawler logs found, needs to be crawled
   if latest is None:
