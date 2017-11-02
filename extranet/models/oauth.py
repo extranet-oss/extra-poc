@@ -26,7 +26,7 @@ class OauthApp(Dated):
   owner_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
 
   # relations
-  tokens = db.relationship('OauthToken', lazy=True, backref=db.backref('client', lazy=True))
+  tokens = db.relationship('OauthToken', lazy=True, backref=db.backref('client', lazy=True), cascade='all, delete-orphan')
 
   # flask_oauth stuff
   @property

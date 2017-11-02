@@ -13,9 +13,9 @@ class Country(Intra):
   code = db.Column(db.String(2), index=True, unique=True, nullable=False)
   name = db.Column(db.String(255), nullable=False)
 
-  cities = db.relationship('City', lazy=True, backref=db.backref('country', lazy=True))
-  buildings = db.relationship('Building', lazy=True, backref=db.backref('country', lazy=True))
-  rooms = db.relationship('Room', lazy=True, backref=db.backref('country', lazy=True))
+  cities = db.relationship('City', lazy=True, backref=db.backref('country', lazy=True), cascade='all, delete-orphan')
+  buildings = db.relationship('Building', lazy=True, backref=db.backref('country', lazy=True), cascade='all, delete-orphan')
+  rooms = db.relationship('Room', lazy=True, backref=db.backref('country', lazy=True), cascade='all, delete-orphan')
 
   def __init__(self, key, code, name):
     self.intra_code = key
@@ -40,8 +40,8 @@ class City(Intra):
 
   country_id = db.Column(db.Integer, db.ForeignKey('country.id'), nullable=False)
 
-  buildings = db.relationship('Building', lazy=True, backref=db.backref('city', lazy=True))
-  rooms = db.relationship('Room', lazy=True, backref=db.backref('city', lazy=True))
+  buildings = db.relationship('Building', lazy=True, backref=db.backref('city', lazy=True), cascade='all, delete-orphan')
+  rooms = db.relationship('Room', lazy=True, backref=db.backref('city', lazy=True), cascade='all, delete-orphan')
 
   def __init__(self, key, code, name, country):
     self.intra_code = key
@@ -69,7 +69,7 @@ class Building(Intra):
   country_id = db.Column(db.Integer, db.ForeignKey('country.id'), nullable=False)
   city_id = db.Column(db.Integer, db.ForeignKey('city.id'), nullable=False)
 
-  rooms = db.relationship('Room', lazy=True, backref=db.backref('building', lazy=True))
+  rooms = db.relationship('Room', lazy=True, backref=db.backref('building', lazy=True), cascade='all, delete-orphan')
 
   def __init__(self, key, code, name, country, city):
     self.intra_code = key
@@ -102,7 +102,7 @@ class Room(Intra):
   name = db.Column(db.String(255), nullable=False)
 
   seats = db.Column(db.Integer, nullable=False)
-  types = db.relationship('RoomType', secondary=room_types, lazy='subquery', backref=db.backref('rooms', lazy=True))
+  types = db.relationship('RoomType', secondary=room_types, lazy='subquery', backref=db.backref('rooms', lazy=True), cascade='all')
 
   country_id = db.Column(db.Integer, db.ForeignKey('country.id'))
   city_id = db.Column(db.Integer, db.ForeignKey('city.id'))
