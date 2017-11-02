@@ -1,5 +1,5 @@
 from extranet import app, db, cache
-from extranet.crawler import locations
+from extranet.crawler import locations, log
 
 @app.cli.command('createdb')
 def createdb():
@@ -22,5 +22,8 @@ def clearcache():
 @app.cli.command('crawl')
 def crawl():
   print('Updating data...')
-  locations.update()
+  if log.needs_crawling('locations'):
+    locations.update()
+  else:
+    print('Locations up to date!')
   print('Done.')
