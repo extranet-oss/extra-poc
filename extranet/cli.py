@@ -1,4 +1,5 @@
 from extranet import app, db, cache
+from extranet.crawler import locations
 
 @app.cli.command('createdb')
 def createdb():
@@ -16,4 +17,10 @@ def dropdb():
 def clearcache():
   print('Clearing cache...')
   cache.clear()
+  print('Done.')
+
+@app.cli.command('crawl')
+def crawl():
+  print('Updating data...')
+  locations.update()
   print('Done.')
