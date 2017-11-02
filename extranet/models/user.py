@@ -26,7 +26,8 @@ class User(Dated):
   intra_token = db.Column(db.String(40))
 
   # relations
-  oauth_apps = db.relationship('OauthApp')
+  oauth_apps = db.relationship('OauthApp', lazy=True, backref=db.backref('owner', lazy=True))
+  oauth_tokens = db.relationship('OauthToken', lazy=True, backref=db.backref('user', lazy=True))
 
   def __init__(self, email, firstname, lastname):
     self.uuid = uuid.uuid4()

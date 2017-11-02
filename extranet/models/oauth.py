@@ -24,7 +24,9 @@ class OauthApp(Dated):
 
   # app owner
   owner_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
-  owner = db.relationship('User')
+
+  # relations
+  tokens = db.relationship('OauthToken', lazy=True, backref=db.backref('client', lazy=True))
 
   # flask_oauth stuff
   @property
@@ -62,7 +64,6 @@ class OauthToken(Base):
 
   # associated application
   client_id = db.Column(db.String(36), db.ForeignKey('oauth_app.client_id'), nullable=False)
-  client = db.relationship('OauthApp')
 
   # token info
   token_type = db.Column(db.String(40), nullable=False)
@@ -75,7 +76,6 @@ class OauthToken(Base):
 
   # associated user
   user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
-  user = db.relationship('User')
 
   def __init__(self, *args, **kwargs):
     self.access_token = kwargs.get('access_token')
