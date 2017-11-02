@@ -3,15 +3,13 @@ from sqlalchemy import not_
 
 from extranet import app, db
 from extranet.crawler import api
+from extranet.crawler.log import new_log
 from extranet.models.locations import Country, City, Building, Room, RoomType
-from extranet.models.crawler import CrawlerLog
 
 def update():
 
   # Create a log to track crawling status
-  log = CrawlerLog('locations')
-  db.session.add(log)
-  db.session.commit()
+  log = new_log('locations')
 
   #
   # So how do we proceed here,
@@ -27,10 +25,7 @@ def update():
     api.set_custom_token(app.config['CRAWLER_DEFAULT_TOKEN'])
     locations = api.locations()
   except:
-    log.status = 0
-    log.msg = 'Failed to load ressource:\n' + traceback.format_exc()
-    db.session.add(log)
-    db.session.commit()
+    log.fail('Failed to load ressource:\n' + traceback.format_exc())
     print(log.msg)
     return
 
@@ -184,10 +179,7 @@ def update():
     db.session.commit()
   except:
     db.session.rollback()
-    log.status = 0
-    log.msg = 'Failed to process data:\n' + traceback.format_exc()
-    db.session.add(log)
-    db.session.commit()
+    log.fail('Failed to process data:\n' + traceback.format_exc())
     print(log.msg)
     return
 
@@ -208,16 +200,10 @@ def update():
     db.session.commit()
   except:
     db.session.rollback()
-    log.status = 0
-    log.msg = 'Failed to delete outdated data:\n' + traceback.format_exc()
-    db.session.add(log)
-    db.session.commit()
+    log.fail('Failed to delete outdated data:\n' + traceback.format_exc())
     print(log.msg)
     return
 
   # Everything is OK, save log status
-  log.status = 1
-  log.msg = 'OK'
-  db.session.add(log)
-  db.session.commit()
+  log.ok()
   print(log.msg)
