@@ -18,3 +18,14 @@ class Dated(Base):
   ctime = db.Column(db.DateTime, nullable=False, default=db.func.current_timestamp())
   mtime = db.Column(db.DateTime, nullable=False, default=db.func.current_timestamp(),
                                                  onupdate=db.func.current_timestamp())
+
+class Intra(Base):
+
+  __abstract__ = True
+
+  # crawler timestamps
+  # itime = first indexation time
+  # utime = last update time
+  itime = db.Column(db.DateTime, nullable=False, default=db.func.current_timestamp())
+  utime = db.Column(db.DateTime, nullable=False, default=db.func.current_timestamp(),
+                                                 onupdate=db.func.current_timestamp())
