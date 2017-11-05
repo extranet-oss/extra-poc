@@ -19,8 +19,10 @@ class OauthApp(Dated):
   name = db.Column(db.String(255), index=True, nullable=False)
   description = db.Column(db.Text)
   website = db.Column(db.String(255), nullable=False)
-  #picture = db.Column(db.ForeignKey('picture.id'))
-  #picture = db.Column(db.ForeignKey('Picture'))
+
+  # app picture
+  picture_id = db.Column(db.Integer, db.ForeignKey('picture.id'))
+  picture = db.relationship('Picture', lazy=True, backref=db.backref('app', lazy=True), cascade='all, delete-orphan', single_parent=True)
 
   # app owner
   owner_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
