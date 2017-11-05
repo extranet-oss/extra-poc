@@ -1,5 +1,6 @@
 # general
 DOMAIN = 'Domain'
+DEBUG = False
 
 # session
 SECRET_KEY = 'Generate a 32char random string'
