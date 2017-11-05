@@ -1,5 +1,7 @@
 #!/bin/bash
 
+DIR=$(dirname "$(readlink -f "$0")")
+
 # Try to execute a `return` statement,
 # but do it in a sub-shell and catch the results.
 # If this script isn't sourced, that will raise an error.
@@ -11,11 +13,11 @@ fi
 
 # load virtual environment
 if ! [ -v VIRTUAL_ENV ]; then
-  source "venv/bin/activate"
+  source "$DIR/venv/bin/activate"
 else
   echo "VirtualEnv already activated."
 fi
 
 # setup environment variables
 export FLASK_DEBUG=1
-export FLASK_APP="app.py"
+export FLASK_APP="$DIR/app.py"
