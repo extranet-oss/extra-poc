@@ -1,8 +1,15 @@
 import uuid
 import json
+from enum import Enum, auto
 
 from extranet import db
-from extranet.models._templates import Dated
+from extranet.models._templates import Dated, Intra
+
+user_groups = db.Table('user_xref_user_group',
+  db.Column('user_id', db.Integer, db.ForeignKey('user.id'), primary_key=True),
+  db.Column('user_group_id', db.Integer, db.ForeignKey('user_group.id'), primary_key=True)
+)
+
 
 class User(Dated):
 
@@ -26,6 +33,9 @@ class User(Dated):
   intra_token = db.Column(db.String(40))
 
   # relations
+  profile = db.relationship('UserProfile', lazy=True, backref=db.backref('user', lazy=True), cascade='all, delete-orphan', uselist=False)
+  groups = db.relationship('UserGroup', secondary=user_groups, lazy=True, backref=db.backref('users', lazy=True))
+  managed_groups = db.relationship('UserGroup', lazy=True, backref=db.backref('master', lazy=True))
   oauth_apps = db.relationship('OauthApp', lazy=True, backref=db.backref('owner', lazy=True), cascade='all, delete-orphan')
   oauth_tokens = db.relationship('OauthToken', lazy=True, backref=db.backref('user', lazy=True), cascade='all, delete-orphan')
 
@@ -67,3 +77,97 @@ class User(Dated):
 
   def __repr__(self):
     return '<User %r>' % self.id
+
+
+class UserProfile(Intra):
+
+  # owner
+  user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+
+  # timestamps
+  ctime = db.Column(db.DateTime, nullable=False)
+  mtime = db.Column(db.DateTime, nullable=False)
+
+  # profile access (public means profile accessible to everyone, findable on userlist)
+  public = db.Column(db.Boolean, nullable=False, default=False)
+
+  # profile pic
+  picture_id = db.Column(db.Integer, db.ForeignKey('picture.id'))
+  picture = db.relationship('Picture', lazy=True, backref=db.backref('user', lazy=True), cascade='all, delete-orphan', single_parent=True)
+
+  # custom user info
+  custom_info = db.relationship('UserProfileCustomInfo', lazy=True, backref=db.backref('user_profile', lazy=True), cascade='all, delete-orphan')
+
+  def __init__(self, user, ctime, mtime):
+    self.user_id = user.id
+
+    self.ctime = ctime
+    self.mtime = mtime
+
+  def __repr__(self):
+    return '<UserProfile %r>' % self.id
+
+
+class UserProfileCustomInfoTypes(Enum):
+  country = auto()
+  city = auto()
+  address = auto()
+  job = auto()
+  phone = auto()
+  birthday = auto()
+  birthplace = auto()
+  twitter = auto()
+  website = auto()
+  googleplus = auto()
+  facebook = auto()
+  discord = auto()
+  linkedin = auto()
+  github = auto()
+
+
+class UserProfileCustomInfo(Intra):
+
+  user_profile_id = db.Column(db.Integer, db.ForeignKey('user_profile.id'), nullable=False)
+  type = db.Column(db.Enum(UserProfileCustomInfoTypes), nullable=False)
+
+  value = db.Column(db.String(255), nullable=False)
+  public = db.Column(db.Boolean, nullable=False, default=True)
+
+  def __init__(self, user_profile, type, value):
+    self.user_profile_id = user_profile.id
+    self.type = type
+
+    self.value = value
+
+  def __repr__(self):
+    return '<UserProfileCustomInfo %r>' % self.id
+
+
+class UserGroup(Intra):
+
+  # uuid
+  uuid = db.Column(db.String(36), index=True, unique=True, nullable=False)
+  intra_code = db.Column(db.String(255), index=True, unique=True, nullable=False)
+
+  # group info
+  # member count represents number of members on intra-side, not on extranet's side
+  name = db.Column(db.String(255), nullable=False)
+  description = db.Column(db.Text)
+  member_count = db.Column(db.Integer, nullable=False)
+
+  # group manager
+  manager_intra_uid = db.Column(db.String(320), nullable=False)
+  manager_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+
+  def __init__(self, code, name, description, count, manager_login):
+    self.uuid = uuid.uuid4()
+    self.intra_code = code
+
+    self.name = name
+    self.description = description
+    self.member_count = count
+
+    self.manager_intra_uid = manager_login
+
+  def __repr__(self):
+    return '<Group %r>' % self.id
