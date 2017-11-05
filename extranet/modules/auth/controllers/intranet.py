@@ -44,7 +44,7 @@ def intranet():
     return render_intranet()
   user = r.json()
 
-  if user['login'] != current_user.email:
+  if user['internal_email'] != current_user.email:
     flash('This isn\'t your intranet account.')
     return render_intranet()
 
