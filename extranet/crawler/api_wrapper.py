@@ -19,7 +19,7 @@ class IntranetAPI():
   def locations(self):
     r = self.client.request('location.js', token=self.token)
     if r.status_code != 200:
-      raise IntranetException('HTTP/' + str(r.status_code) + ' status code recieved')
+      raise IntranetAPIException('HTTP/' + str(r.status_code) + ' status code recieved')
 
     # find bounds of json object inside js code
     start = r.text.find('{')
@@ -33,6 +33,6 @@ class IntranetAPI():
     try:
       data = json.loads(r.text[start:end])
     except:
-      raise IntranetException('Invalid JSON recieved')
+      raise IntranetAPIException('Invalid JSON recieved')
 
     return data
