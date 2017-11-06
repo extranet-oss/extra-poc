@@ -170,4 +170,4 @@ class UserGroup(Intra):
     self.manager_intra_uid = manager_login
 
   def __repr__(self):
-    return '<Group %r>' % self.id
+    return '<UserGroup %r>' % self.id
