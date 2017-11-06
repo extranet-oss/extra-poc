@@ -4,7 +4,7 @@ from sqlalchemy import not_
 from extranet import app, db
 from extranet.crawler import api
 from extranet.crawler.log import new_log
-from extranet.models.locations import Country, City, Building, Room, RoomType
+from extranet.models.location import Country, City, Building, Room, RoomType
 
 def update():
 
