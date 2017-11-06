@@ -36,6 +36,7 @@ class User(Dated):
   profile = db.relationship('UserProfile', lazy=True, backref=db.backref('user', lazy=True), cascade='all, delete-orphan', uselist=False)
   groups = db.relationship('UserGroup', secondary=user_groups, lazy=True, backref=db.backref('users', lazy=True))
   managed_groups = db.relationship('UserGroup', lazy=True, backref=db.backref('master', lazy=True))
+  academic = db.relationship('UserAcademic', lazy=True, backref=db.backref('user', lazy=True), cascade='all, delete-orphan', uselist=False)
   oauth_apps = db.relationship('OauthApp', lazy=True, backref=db.backref('owner', lazy=True), cascade='all, delete-orphan')
   oauth_tokens = db.relationship('OauthToken', lazy=True, backref=db.backref('user', lazy=True), cascade='all, delete-orphan')
 
@@ -171,3 +172,42 @@ class UserGroup(Intra):
 
   def __repr__(self):
     return '<UserGroup %r>' % self.id
+
+
+class UserAcademic(Intra):
+
+  # owner
+  user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+
+  # school
+  school_id = db.Column(db.Integer, db.ForeignKey('school.id'), nullable=False)
+  school = db.relationship('School', lazy=True, backref=db.backref('user_academics', lazy=True))
+  school_year = db.Column(db.Integer, nullable=False)
+
+  # current status
+  promotion_id = db.Column(db.Integer, db.ForeignKey('promotion.id'), nullable=False)
+  promotion = db.relationship('Promotion', lazy=True, backref=db.backref('user_academics', lazy=True))
+  course_id = db.Column(db.Integer, db.ForeignKey('course.id'), nullable=False)
+  course = db.relationship('Course', lazy=True, backref=db.backref('user_academics', lazy=True))
+  semester = db.Column(db.Integer, nullable=False)
+  year_of_study = db.Column(db.Integer, nullable=False)
+
+  # location
+  country_id = db.Column(db.Integer, db.ForeignKey('country.id'), nullable=False)
+  country = db.relationship('Country', lazy=True, backref=db.backref('user_academics', lazy=True))
+  city_id = db.Column(db.Integer, db.ForeignKey('city.id'), nullable=False)
+  city = db.relationship('City', lazy=True, backref=db.backref('user_academics', lazy=True))
+
+  # user performance
+  credits = db.Column(db.Integer, nullable=False)
+  gpa = db.Column(db.Integer, nullable=False)
+  spice_available = db.Column(db.Integer, nullable=False)
+  spice_consumed = db.Column(db.Integer, nullable=False)
+  netsoul_active = db.Column(db.Integer, nullable=False)
+  netsoul_norm = db.Column(db.Integer, nullable=False)
+
+  def __init__(self, user):
+    self.user_id = user.id
+
+  def __repr__(self):
+    return '<UserAcademic %r>' % self.id
