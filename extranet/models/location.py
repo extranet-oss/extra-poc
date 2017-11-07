@@ -1,4 +1,5 @@
 import uuid
+from slugify import slugify
 
 from extranet import db
 from extranet.models._templates import Base, Intra
@@ -13,6 +14,7 @@ class Country(Intra):
   uuid = db.Column(db.String(36), index=True, unique=True, nullable=False)
   intra_code = db.Column(db.String(255), index=True, unique=True, nullable=False)
 
+  slug = db.Column(db.String(255), index=True, unique=True, nullable=False)
   name = db.Column(db.String(255), nullable=False)
 
   cities = db.relationship('City', lazy=True, backref=db.backref('country', lazy=True), cascade='all, delete-orphan')
@@ -23,6 +25,7 @@ class Country(Intra):
     self.uuid = uuid.uuid4()
     self.intra_code = key
 
+    self.slug = slugify(key)
     self.name = name
 
   def __repr__(self):
@@ -34,6 +37,7 @@ class City(Intra):
   uuid = db.Column(db.String(36), index=True, unique=True, nullable=False)
   intra_code = db.Column(db.String(255), index=True, unique=True, nullable=False)
 
+  slug = db.Column(db.String(255), index=True, unique=True, nullable=False)
   name = db.Column(db.String(255), nullable=False)
 
   country_id = db.Column(db.Integer, db.ForeignKey('country.id'), nullable=False)
@@ -45,6 +49,7 @@ class City(Intra):
     self.uuid = uuid.uuid4()
     self.intra_code = key
 
+    self.slug = slugify(key[3:])
     self.name = name
 
     self.country = country
@@ -58,6 +63,7 @@ class Building(Intra):
   uuid = db.Column(db.String(36), index=True, unique=True, nullable=False)
   intra_code = db.Column(db.String(255), index=True, unique=True, nullable=False)
 
+  slug = db.Column(db.String(255), index=True, unique=True, nullable=False)
   name = db.Column(db.String(255), nullable=False)
 
   country_id = db.Column(db.Integer, db.ForeignKey('country.id'), nullable=False)
@@ -69,6 +75,7 @@ class Building(Intra):
     self.uuid = uuid.uuid4()
     self.intra_code = key
 
+    self.slug = slugify(key[3:])
     self.name = name
 
     self.country = country
@@ -89,6 +96,7 @@ class Room(Intra):
   uuid = db.Column(db.String(36), index=True, unique=True, nullable=False)
   intra_code = db.Column(db.String(255), index=True, unique=True, nullable=False)
 
+  slug = db.Column(db.String(255), index=True, unique=True, nullable=False)
   name = db.Column(db.String(255), nullable=False)
 
   seats = db.Column(db.Integer, nullable=False)
@@ -102,6 +110,7 @@ class Room(Intra):
     self.uuid = uuid.uuid4()
     self.intra_code = key
 
+    self.slug = slugify(key[3:])
     self.name = name
 
     self.seats = seats

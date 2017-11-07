@@ -1,4 +1,5 @@
 import uuid
+from slugify import slugify
 
 from extranet import db
 from extranet.models._templates import Intra
@@ -10,12 +11,14 @@ class School(Intra):
   intra_code = db.Column(db.String(255), index=True, nullable=False)
 
   # school info
+  slug = db.Column(db.String(255), index=True, unique=True, nullable=False)
   name = db.Column(db.String(255), nullable=False)
 
   def __init__(code, name):
     self.uuid = uuid.uuid4()
     self.intra_code = code
 
+    self.slug = slugify(code)
     self.name = name
 
   def __repr__(self):
@@ -29,12 +32,14 @@ class Promotion(Intra):
   intra_code = db.Column(db.String(255), index=True, nullable=False)
 
   # promo info
+  slug = db.Column(db.String(255), index=True, unique=True, nullable=False)
   name = db.Column(db.String(255), nullable=False)
 
   def __init__(code, name):
     self.uuid = uuid.uuid4()
     self.intra_code = code
 
+    self.slug = slugify(code)
     self.name = name
 
   def __repr__(self):
@@ -48,12 +53,14 @@ class Course(Intra):
   intra_code = db.Column(db.String(255), index=True, nullable=False)
 
   # course info
+  slug = db.Column(db.String(255), index=True, unique=True, nullable=False)
   name = db.Column(db.String(255), nullable=False)
 
   def __init__(code, name):
     self.uuid = uuid.uuid4()
     self.intra_code = code
 
+    self.slug = slugify(code)
     self.name = name
 
   def __repr__(self):
