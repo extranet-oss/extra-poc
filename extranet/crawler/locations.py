@@ -3,13 +3,18 @@ from sqlalchemy import not_
 
 from extranet import app, db
 from extranet.crawler import api
-from extranet.crawler.log import new_log
+from extranet.crawler.log import new_log, needs_crawling
 from extranet.models.location import Country, City, Building, Room, RoomType
 
 def update():
 
+  # Quit if locations are recent enough
+  log_key = 'locations'
+  if not needs_crawling(log_key):
+    return
+
   # Create a log to track crawling status
-  log = new_log('locations')
+  log = new_log(log_key)
 
   #
   # So how do we proceed here,

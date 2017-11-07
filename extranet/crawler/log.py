@@ -51,7 +51,8 @@ def needs_crawling(type):
     return False
 
   delta = datetime.datetime.utcnow() - latest.time
-  maxage = maxages[type] if type in maxages else maxages['default']
+  key = type.split(':')[0]
+  maxage = maxages[key] if key in maxages else maxages['default']
 
   # if crawler log is too old, update
   if delta > datetime.timedelta(seconds=maxage):
