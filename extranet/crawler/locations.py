@@ -66,7 +66,7 @@ def update():
 
     # This functions checks if a location is a room (country, city, building can be a room, why not)
     # if it is, the corresponding room is added with its room type
-    def process_rooms(location, key, code, country=None, city=None, building=None, room=None):
+    def process_rooms(location, key, country=None, city=None, building=None, room=None):
       if 'types' not in location:
         return
 
@@ -77,7 +77,7 @@ def update():
       for room in location['types']:
 
         # Create or update associated room type
-        type_entry = RoomType.query.filter_by(code=RoomType.normalize_code(room['type'])).first()
+        type_entry = RoomType.query.filter_by(intra_code=room['type']).first()
         if not type_entry:
           type_entry = RoomType(room['type'], room['title'])
           print('Created room type', room['type'])
@@ -97,7 +97,7 @@ def update():
       # Create or update room
       room_entry = Room.query.filter_by(intra_code=key).first()
       if not room_entry:
-        room_entry = Room(key, code, location['title'], seats, types, country, city, building)
+        room_entry = Room(key, location['title'], seats, types, country, city, building)
         print('Created room', key)
       else:
         room_entry.title = location['title']
@@ -119,7 +119,7 @@ def update():
       # Create or update country
       country_entry = Country.query.filter_by(intra_code=key).first()
       if not country_entry:
-        country_entry = Country(key, country, locations[key]['title'])
+        country_entry = Country(key, locations[key]['title'])
         print('Created country', key)
       else:
         country_entry.title = locations[key]['title']
@@ -128,7 +128,7 @@ def update():
       country_instances.append(country_entry)
 
       # process country rooms if applicable
-      process_rooms(locations[key], key, country, country_entry)
+      process_rooms(locations[key], key, country_entry)
 
       for city, buildings in cities.items():
         key = country + '/' + city
@@ -138,7 +138,7 @@ def update():
         # Create or update city
         city_entry = City.query.filter_by(intra_code=key, country=country_entry).first()
         if not city_entry:
-          city_entry = City(key, city, locations[key]['title'], country_entry)
+          city_entry = City(key, locations[key]['title'], country_entry)
           print('Created city', key)
         else:
           city_entry.title = locations[key]['title']
@@ -147,7 +147,7 @@ def update():
         city_instances.append(city_entry)
 
         # process city rooms if applicable
-        process_rooms(locations[key], key, city, country_entry, city_entry)
+        process_rooms(locations[key], key, country_entry, city_entry)
 
         for building, rooms in buildings.items():
           key = country + '/' + city + '/' + building
@@ -157,7 +157,7 @@ def update():
           # Create or update building
           building_entry = Building.query.filter_by(intra_code=key, city=city_entry).first()
           if not building_entry:
-            building_entry = Building(key, building, locations[key]['title'], country_entry, city_entry)
+            building_entry = Building(key, locations[key]['title'], country_entry, city_entry)
             print('Created building', key)
           else:
             building_entry.title = locations[key]['title']
@@ -166,7 +166,7 @@ def update():
           building_instances.append(building_entry)
 
           # Process building rooms if applicable
-          process_rooms(locations[key], key, building, country_entry, city_entry, building_entry)
+          process_rooms(locations[key], key, country_entry, city_entry, building_entry)
 
           for room in rooms:
             key = country + '/' + city + '/' + building + '/' + room
@@ -174,7 +174,7 @@ def update():
               continue
 
             # Process this room
-            process_rooms(locations[key], key, room, country_entry, city_entry, building_entry)
+            process_rooms(locations[key], key, country_entry, city_entry, building_entry)
 
     db.session.commit()
   except:

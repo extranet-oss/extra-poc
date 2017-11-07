@@ -1,3 +1,5 @@
+import uuid
+
 from extranet import db
 from extranet.models._templates import Base, Intra
 
@@ -8,24 +10,20 @@ from extranet.models._templates import Base, Intra
 
 class Country(Intra):
 
+  uuid = db.Column(db.String(36), index=True, unique=True, nullable=False)
   intra_code = db.Column(db.String(255), index=True, unique=True, nullable=False)
 
-  code = db.Column(db.String(2), index=True, unique=True, nullable=False)
   name = db.Column(db.String(255), nullable=False)
 
   cities = db.relationship('City', lazy=True, backref=db.backref('country', lazy=True), cascade='all, delete-orphan')
   buildings = db.relationship('Building', lazy=True, backref=db.backref('country', lazy=True), cascade='all, delete-orphan')
   rooms = db.relationship('Room', lazy=True, backref=db.backref('country', lazy=True), cascade='all, delete-orphan')
 
-  def __init__(self, key, code, name):
+  def __init__(self, key, name):
+    self.uuid = uuid.uuid4()
     self.intra_code = key
 
-    self.code = self.normalize_code(code)
     self.name = name
-
-  @staticmethod
-  def normalize_code(code):
-    return code.lower()
 
   def __repr__(self):
     return '<Country %r>' % self.id
@@ -33,9 +31,9 @@ class Country(Intra):
 
 class City(Intra):
 
+  uuid = db.Column(db.String(36), index=True, unique=True, nullable=False)
   intra_code = db.Column(db.String(255), index=True, unique=True, nullable=False)
 
-  code = db.Column(db.String(3), index=True, unique=True, nullable=False)
   name = db.Column(db.String(255), nullable=False)
 
   country_id = db.Column(db.Integer, db.ForeignKey('country.id'), nullable=False)
@@ -43,17 +41,13 @@ class City(Intra):
   buildings = db.relationship('Building', lazy=True, backref=db.backref('city', lazy=True), cascade='all, delete-orphan')
   rooms = db.relationship('Room', lazy=True, backref=db.backref('city', lazy=True), cascade='all, delete-orphan')
 
-  def __init__(self, key, code, name, country):
+  def __init__(self, key, name, country):
+    self.uuid = uuid.uuid4()
     self.intra_code = key
 
-    self.code = self.normalize_code(code)
     self.name = name
 
     self.country = country
-
-  @staticmethod
-  def normalize_code(code):
-    return code.lower()
 
   def __repr__(self):
     return '<City %r>' % self.id
@@ -61,9 +55,9 @@ class City(Intra):
 
 class Building(Intra):
 
+  uuid = db.Column(db.String(36), index=True, unique=True, nullable=False)
   intra_code = db.Column(db.String(255), index=True, unique=True, nullable=False)
 
-  code = db.Column(db.String(255), index=True, nullable=False)
   name = db.Column(db.String(255), nullable=False)
 
   country_id = db.Column(db.Integer, db.ForeignKey('country.id'), nullable=False)
@@ -71,18 +65,14 @@ class Building(Intra):
 
   rooms = db.relationship('Room', lazy=True, backref=db.backref('building', lazy=True), cascade='all, delete-orphan')
 
-  def __init__(self, key, code, name, country, city):
+  def __init__(self, key, name, country, city):
+    self.uuid = uuid.uuid4()
     self.intra_code = key
 
-    self.code = self.normalize_code(code)
     self.name = name
 
     self.country = country
     self.city = city
-
-  @staticmethod
-  def normalize_code(code):
-    return code.lower().replace('-', '_')
 
   def __repr__(self):
     return '<Building %r>' % self.id
@@ -96,9 +86,9 @@ room_types = db.Table('room_xref_room_type',
 
 class Room(Intra):
 
+  uuid = db.Column(db.String(36), index=True, unique=True, nullable=False)
   intra_code = db.Column(db.String(255), index=True, unique=True, nullable=False)
 
-  code = db.Column(db.String(255), index=True, nullable=False)
   name = db.Column(db.String(255), nullable=False)
 
   seats = db.Column(db.Integer, nullable=False)
@@ -108,10 +98,10 @@ class Room(Intra):
   city_id = db.Column(db.Integer, db.ForeignKey('city.id'))
   building_id = db.Column(db.Integer, db.ForeignKey('building.id'))
 
-  def __init__(self, key, code, name, seats, types, country=None, city=None, building=None):
+  def __init__(self, key, name, seats, types, country=None, city=None, building=None):
+    self.uuid = uuid.uuid4()
     self.intra_code = key
 
-    self.code = self.normalize_code(code)
     self.name = name
 
     self.seats = seats
@@ -121,26 +111,21 @@ class Room(Intra):
     self.city = city
     self.building = building
 
-  @staticmethod
-  def normalize_code(code):
-    return code.lower().replace('-', '_')
-
   def __repr__(self):
     return '<Room %r>' % self.id
 
 
 class RoomType(Base):
 
-  code = db.Column(db.String(255), index=True, unique=True, nullable=False)
+  uuid = db.Column(db.String(36), index=True, unique=True, nullable=False)
+  intra_code = db.Column(db.String(255), index=True, unique=True, nullable=False)
   name = db.Column(db.String(255), nullable=False)
 
-  def __init__(self, code, name):
-    self.code = self.normalize_code(code)
-    self.name = name
+  def __init__(self, key, name):
+    self.uuid = uuid.uuid4()
+    self.intra_code = key
 
-  @staticmethod
-  def normalize_code(code):
-    return code.lower().replace('-', '_')
+    self.name = name
 
   def __repr__(self):
     return '<RoomType %r>' % self.id
