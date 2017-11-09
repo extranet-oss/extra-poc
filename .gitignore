@@ -200,3 +200,4 @@ extranet/config.py
 .sass-cache/
 venv/
 misc/
+extranet/static/picture/
