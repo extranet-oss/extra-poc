@@ -97,7 +97,7 @@ class UserProfile(Intra):
   picture = db.relationship('Picture', lazy=True, backref=db.backref('user', lazy=True), cascade='all, delete-orphan', single_parent=True)
 
   # custom user info
-  custom_info = db.relationship('UserProfileCustomInfo', lazy=True, backref=db.backref('user_profile', lazy=True), cascade='all, delete-orphan')
+  custom_infos = db.relationship('UserProfileCustomInfo', lazy=True, backref=db.backref('user_profile', lazy=True), cascade='all, delete-orphan')
 
   def __init__(self, user, ctime, mtime):
     self.user_id = user.id
@@ -119,6 +119,7 @@ class UserProfileCustomInfoTypes(Enum):
   birthplace = auto()
   twitter = auto()
   website = auto()
+  email = auto()
   googleplus = auto()
   facebook = auto()
   discord = auto()
