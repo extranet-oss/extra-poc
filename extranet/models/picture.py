@@ -34,6 +34,7 @@ def save_picture(uuid, image):
   os.makedirs(PICTURE_DIR, exist_ok=True)
 
   # save original image
+  image = image.convert('RGB')
   image.save(PICTURE_DIR + uuid + '.' + FORMAT,
              **FORMAT_SETTINGS)
 
