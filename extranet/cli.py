@@ -1,5 +1,5 @@
 from extranet import app, db, cache
-from extranet.crawler import locations
+from extranet.crawler import locations, all_users
 
 @app.cli.command('createdb')
 def createdb():
@@ -23,4 +23,5 @@ def clearcache():
 def crawl():
   print('Updating data...')
   locations.update()
+  all_users.update()
   print('Done.')
