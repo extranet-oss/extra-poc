@@ -56,8 +56,8 @@ class User(Intra):
 
   # relations
   custom_infos = db.relationship('UserProfileCustomInfo', lazy=True, backref=db.backref('user', lazy=True), cascade='all, delete-orphan')
-  groups = db.relationship('UserGroup', secondary=user_groups, lazy=True, backref=db.backref('users', lazy=True))
-  managed_groups = db.relationship('UserGroup', lazy=True, backref=db.backref('master', lazy=True), cascade='all, delete-orphan')
+  groups = db.relationship('UserGroup', secondary=user_groups, lazy=True, backref=db.backref('members', lazy=True))
+  managed_groups = db.relationship('UserGroup', lazy=True, backref=db.backref('manager', lazy=True), cascade='all, delete-orphan')
   academic = db.relationship('UserAcademic', lazy=True, backref=db.backref('user', lazy=True), cascade='all, delete-orphan', uselist=False)
   oauth_apps = db.relationship('OauthApp', lazy=True, backref=db.backref('owner', lazy=True), cascade='all, delete-orphan')
   oauth_tokens = db.relationship('OauthToken', lazy=True, backref=db.backref('user', lazy=True), cascade='all, delete-orphan')
@@ -191,25 +191,26 @@ class UserGroup(Intra):
   # uuid
   uuid = db.Column(db.String(36), index=True, unique=True, nullable=False)
   intra_code = db.Column(db.String(255), index=True, unique=True, nullable=False)
+  parent_id = db.Column(db.Integer, db.ForeignKey('user_group.id'))
+  children = db.relationship('UserGroup', lazy=True, backref=db.backref('parent', lazy=True, remote_side='UserGroup.id'))
 
   # group info
   # member count represents number of members on intra-side, not on extranet's side
+  slug = db.Column(db.String(255), index=True, unique=True, nullable=False)
   name = db.Column(db.String(255), nullable=False)
   description = db.Column(db.Text)
   member_count = db.Column(db.Integer, nullable=False)
 
   # group manager
-  manager_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+  manager_id = db.Column(db.Integer, db.ForeignKey('user.id'))
 
-  def __init__(self, code, name, description, count, manager):
+  def __init__(self, code, name, count):
     self.uuid = str(uuid.uuid4())
     self.intra_code = code
 
+    self.slug = slugify(code)
     self.name = name
-    self.description = description
     self.member_count = count
-
-    self.manager_id = manager.id
 
   def __repr__(self):
     return '<UserGroup %r>' % self.id
@@ -225,22 +226,22 @@ class UserAcademic(Intra):
 
   # school
   school_id = db.Column(db.Integer, db.ForeignKey('school.id'), nullable=False)
-  school = db.relationship('School', lazy=True, backref=db.backref('user_academics', lazy=True))
+  school = db.relationship('School', lazy=True, backref=db.backref('user_academics', lazy=True), uselist=False)
   school_year = db.Column(db.Integer, nullable=False)
 
   # current status
   promotion_id = db.Column(db.Integer, db.ForeignKey('promotion.id'), nullable=False)
-  promotion = db.relationship('Promotion', lazy=True, backref=db.backref('user_academics', lazy=True))
+  promotion = db.relationship('Promotion', lazy=True, backref=db.backref('user_academics', lazy=True), uselist=False)
   course_id = db.Column(db.Integer, db.ForeignKey('course.id'), nullable=False)
-  course = db.relationship('Course', lazy=True, backref=db.backref('user_academics', lazy=True))
+  course = db.relationship('Course', lazy=True, backref=db.backref('user_academics', lazy=True), uselist=False)
   semester = db.Column(db.Integer, nullable=False)
   year_of_study = db.Column(db.Integer, nullable=False)
 
   # location
   country_id = db.Column(db.Integer, db.ForeignKey('country.id'), nullable=False)
-  country = db.relationship('Country', lazy=True, backref=db.backref('user_academics', lazy=True))
+  country = db.relationship('Country', lazy=True, backref=db.backref('user_academics', lazy=True), uselist=False)
   city_id = db.Column(db.Integer, db.ForeignKey('city.id'), nullable=False)
-  city = db.relationship('City', lazy=True, backref=db.backref('user_academics', lazy=True))
+  city = db.relationship('City', lazy=True, backref=db.backref('user_academics', lazy=True), uselist=False)
 
   # user performance
   credits = db.Column(db.Integer, nullable=False)
