@@ -88,8 +88,13 @@ def office365_authorized():
         # create user if not already registered
         if not user:
 
-          user = User(me.data['mail'], me.data['givenName'], me.data['surname'])
-          user.office365_uid = me.data['id']
+          # we don't support logging in for legacy accounts
+          user = User.query.filter_by(intra_uid=me.data['mail']).first()
+          if not user:
+            flash("You are not registered on the intranet. If this is an error, please contact us.")
+            return redirect(url_for(session['office365.prev']))
+
+          user.register(me.data['id'], me.data['mail'], me.data['givenName'], me.data['surname'])
 
         # everything ok, save token & login
         user.office365_token = token

@@ -1,11 +1,11 @@
-from flask import render_template, request, flash
-from flask_login import fresh_login_required, current_user
+from flask import render_template, request, flash, url_for
+from flask_login import fresh_login_required, current_user, logout_user
 import re
 
 from extranet import db
 from extranet.modules.auth import bp
 from extranet.connections.intranet import client as intranet_client
-from extranet.connections.intranet import no_token_required
+from extranet.connections.intranet import no_token_required, Intranet
 from extranet.utils import redirect_back
 
 autologin_regex = re.compile('https://intra.epitech.eu/auth-([a-z0-9]{40})')
@@ -28,8 +28,10 @@ def intranet():
 
   if not confirm:
     # delete account, logout
-    flash('You can\' delete your account yet.')
-    return render_intranet()
+    current_user.unregister()
+    logout_user()
+    flash('Account deleted.')
+    return url_for('index')
 
   # check autologin link format & extract token
   matches = autologin_regex.match(request.form.get('link'))
@@ -38,18 +40,20 @@ def intranet():
     return render_intranet()
 
   # fetch user info from intranet
-  r = intranet_client.get('user', token=matches[1])
-  if r.status_code != 200:
+  try:
+    login = intranet_client.get_current_user(token=matches[1])
+  except IntranetInvalidToken:
+    flash('The autologin link is invalid or has expired.')
+    return render_intranet()
+  except:
     flash('Can\'t get user info from intranet.')
     return render_intranet()
-  user = r.json()
 
-  if user['internal_email'] != current_user.email:
+  if login != current_user.intra_uid:
     flash('This isn\'t your intranet account.')
     return render_intranet()
 
   # intranet user is same as logged in user, saving token
-  current_user.intra_uid = user['login']
   current_user.intra_token = matches[1]
 
   db.session.add(current_user)
