@@ -1,4 +1,4 @@
-from flask import render_template, request, flash, url_for
+from flask import render_template, request, flash, redirect, url_for
 from flask_login import fresh_login_required, current_user, logout_user
 import re
 
@@ -31,7 +31,7 @@ def intranet():
     current_user.unregister()
     logout_user()
     flash('Account deleted.')
-    return url_for('index')
+    return redirect(url_for('index'))
 
   # check autologin link format & extract token
   matches = autologin_regex.match(request.form.get('link'))
