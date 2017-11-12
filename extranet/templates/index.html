@@ -4,6 +4,9 @@
 <p>Connect external services to your Epitech account.</p>
 {% if current_user.is_authenticated %}
 <hr>
+{% if current_user.picture %}
+<img src="{{ current_user.picture.get_url((128, 128)) }}"><br>
+{% endif %}
 <strong>Hi {{ current_user.firstname }} {{ current_user.lastname }}! [{{ current_user.uuid }}]</strong><br>
 <a href="{{ url_for('auth.refresh') }}">Confirm session (delete session login before)</a><br>
 <a href="{{ url_for('auth.logout') }}">Logout</a><br>
