@@ -238,6 +238,12 @@ class Intranet():
 
     return self.post('user/{}/edit/save'.format(login), **kwargs)
 
+  def get_group(self, name, **kwargs):
+    return self.get('group/{}/'.format(name), **kwargs)
+
+  def get_group_members(self, name, **kwargs):
+    return self.get('group/{}/member/'.format(name), **kwargs)
+
 client = Intranet(app)
 
 @client.token_getter
