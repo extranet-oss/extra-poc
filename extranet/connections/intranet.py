@@ -185,7 +185,6 @@ class Intranet():
     return self.get(url, **kwargs)
 
   def get_all_users(self, **kwargs):
-    kwargs['data'] = {'search': 'jordan'}
     return self.get('complete/user', **kwargs)
 
   def get_picture(self, login=None):
