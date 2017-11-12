@@ -69,6 +69,7 @@ def intranet():
 
   # intranet user is same as logged in user, saving token
   current_user.intra_token = matches[1]
+  current_user.intra_token_expired = False
 
   db.session.add(current_user)
   db.session.commit()

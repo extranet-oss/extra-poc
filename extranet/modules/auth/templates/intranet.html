@@ -1,7 +1,12 @@
 {% extends "base.html" %}
 {% block content %}
+{% if current_user.intra_token_expired %}
+<h1>Welcome back to extranet, please reconnect your intranet account</h1>
+<p>Your autologin token expired, you must enter a new one in order to use the Extranet service.</p>
+{% else %}
 <h1>Welcome to extranet, please connect your intranet account</h1>
 <p>This step is mandatory in order to use the Extranet service.</p>
+{% endif %}
 <p>Please copy the autologin link in the text field below. It will give us access to your intranet account. If you don't want us to have write rights on your account, please login on the intranet with your parent's account and give us the read-only autologin link from their account.</p>
 <form action="" method="post">
   <input type="text" name="link" placeholder="https://intra.epitech.eu/auth-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx">
