@@ -1,0 +1,69 @@
+{% extends "base.html" %}
+{% block content %}
+<h1>{{ current_user.fullname }} ({{ current_user.username}})</h1>
+<hr>
+<h3>Basic info</h3>
+<strong>uuid:</strong> {{current_user.uuid}}<br>
+<strong>username:</strong> {{current_user.username}}<br>
+<strong>realm:</strong> {{current_user.realm}}<br>
+<strong>firstname:</strong> {{current_user.firstname}}<br>
+<strong>lastname:</strong> {{current_user.lastname}}<br>
+<strong>fullname:</strong> {{current_user.fullname}}<br>
+<strong>creation time:</strong> {{current_user.ctime}}<br>
+<strong>modification time:</strong> {{current_user.mtime}}<br>
+<strong>registration time:</strong> {{current_user.rtime}}<br>
+<strong>email:</strong> {{current_user.email}}<br>
+<strong>office365 uid:</strong> {{current_user.office365_uid}}<br>
+<strong>intra uid:</strong> {{current_user.intra_uid}}<br>
+<strong>intra write access:</strong> {{current_user.intra_token_rw}}<br>
+<hr>
+{% if current_user.picture %}
+<h3>User picture</h3>
+{% for size in current_user.picture.sizes %}
+<p><strong>{{size[0]}}x{{size[1]}}:</strong></p>
+<img src="{{ current_user.picture.get_url(size) }}">
+{% endfor %}
+<p><strong>original:</strong></p>
+<img src="{{ current_user.picture.get_url() }}">
+<hr>
+{% endif %}
+<h3>Profile</h3>
+<strong>public:</strong> {{current_user.public}}<br>
+{% for info in current_user.custom_infos %}
+<strong>{{info.type}} (public: {{info.public}}):</strong> {{info.value}}<br>
+{% endfor %}
+<hr>
+<h3>Groups</h3>
+{% for group in current_user.groups %}
+<p><strong>{{group.name}}:</strong> {{group.description}} ({{group.member_count}} members)<br>
+{% if group.manager %}
+manager: {% if group.manager.picture %}<img src="{{ group.manager.picture.get_url([32, 32]) }}">{% endif %} {{group.manager.fullname}}<br>
+{% endif %}
+{% for subgroup in group.children %}
+subgroup: {{subgroup.name}} ({{subgroup.member_count}} members)<br>
+{% endfor %}
+members:<br>
+{% for member in group.members %}
+{% if member.picture %}
+<img src="{{ member.picture.get_url([32, 32]) }}" alt="{{ member.fullname }}" title="{{ member.fullname }}">
+{% endif %}
+{% endfor %}
+</p>
+{% endfor %}
+<hr>
+<h3>Academic</h3>
+<strong>school:</strong> {{current_user.academic.school.name}} ({{current_user.academic.school.slug}})<br>
+<strong>promotion:</strong> {{current_user.academic.promotion.name}} ({{current_user.academic.promotion.slug}})<br>
+<strong>course:</strong> {{current_user.academic.course.name}} ({{current_user.academic.course.slug}})<br>
+<strong>school year:</strong> {{current_user.academic.school_year}}<br>
+<strong>semester:</strong> {{current_user.academic.semester}}<br>
+<strong>year of study:</strong> {{current_user.academic.year_of_study}}<br>
+<strong>country:</strong> {{current_user.academic.country.name}} ({{current_user.academic.country.slug}})<br>
+<strong>city:</strong> {{current_user.academic.city.name}} ({{current_user.academic.city.slug}})<br>
+<strong>credits:</strong> {{current_user.academic.credits}}<br>
+<strong>gpa:</strong> {{current_user.academic.gpa / 100}}<br>
+<strong>spice available:</strong> {{current_user.academic.spice_available}} (not implemented)<br>
+<strong>spice consumed:</strong> {{current_user.academic.spice_consumed}} (not implemented)<br>
+<strong>netsoul active:</strong> {{current_user.academic.netsoul_active}} (not implemented)<br>
+<strong>netsoul norm:</strong> {{current_user.academic.netsoul_norm}} (not implemented)<br>
+{% endblock %}
