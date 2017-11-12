@@ -43,7 +43,7 @@ def update():
       fullname = user_data['title'] if 'title' in user_data else user_data['login']
       if user is None:
         user = User(user_data['login'], fullname)
-        print('Created user')
+        print('Created user', user_data['login'])
 
       # try to get user picture
       try:
