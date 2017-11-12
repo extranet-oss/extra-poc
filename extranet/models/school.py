@@ -14,7 +14,7 @@ class School(Intra):
   slug = db.Column(db.String(255), index=True, unique=True, nullable=False)
   name = db.Column(db.String(255), nullable=False)
 
-  def __init__(code, name):
+  def __init__(self, code, name):
     self.uuid = uuid.uuid4()
     self.intra_code = code
 
@@ -35,7 +35,7 @@ class Promotion(Intra):
   slug = db.Column(db.String(255), index=True, unique=True, nullable=False)
   name = db.Column(db.String(255), nullable=False)
 
-  def __init__(code, name):
+  def __init__(self, code, name):
     self.uuid = uuid.uuid4()
     self.intra_code = code
 
@@ -56,7 +56,7 @@ class Course(Intra):
   slug = db.Column(db.String(255), index=True, unique=True, nullable=False)
   name = db.Column(db.String(255), nullable=False)
 
-  def __init__(code, name):
+  def __init__(self, code, name):
     self.uuid = uuid.uuid4()
     self.intra_code = code
 
