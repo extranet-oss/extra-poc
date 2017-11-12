@@ -2,7 +2,7 @@ import traceback
 from sqlalchemy import not_
 
 from extranet import app, db
-from extranet.crawler import api
+from extranet.connections.intranet import client
 from extranet.crawler.log import new_log, needs_crawling
 from extranet.models.location import Country, City, Building, Room, RoomType
 
@@ -27,8 +27,7 @@ def update():
   # First load data from intranet
   try:
     print('Loading locations ressource...')
-    api.set_custom_token(app.config['CRAWLER_DEFAULT_TOKEN'])
-    locations = api.locations()
+    locations = client.get_locations(token=app.config['CRAWLER_DEFAULT_TOKEN'])
   except:
     log.fail('Failed to load ressource:\n' + traceback.format_exc())
     print(log.msg)
