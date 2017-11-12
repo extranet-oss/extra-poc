@@ -32,8 +32,13 @@ class CrawlerLogHelper():
 def new_log(type):
   return CrawlerLogHelper(type)
 
+# maxages values are for testing, it is not optimized
 maxages = {
-  'default': 60
+  'default': 60,                       # 1 minute
+  'locations': 60 * 60 * 24 * 31 * 12, # 1 year
+  'all_users': 60 * 60 * 24 * 31 * 6,  # 6 months
+  'user': 60 * 60,                     # 1 hour
+  'group': 60 * 60 * 24 * 31           # 1 month
 }
 
 # How do we determine if a given ressource type should not be crawled:
