@@ -5,7 +5,7 @@ import re
 from extranet import db
 from extranet.modules.auth import bp
 from extranet.connections.intranet import client as intranet_client
-from extranet.connections.intranet import no_token_required, Intranet
+from extranet.connections.intranet import no_token_required, IntranetInvalidToken, IntranetReadOnly
 from extranet.utils import redirect_back
 
 autologin_regex = re.compile('https://intra.epitech.eu/auth-([a-z0-9]{40})')
@@ -41,7 +41,7 @@ def intranet():
 
   # fetch user info from intranet
   try:
-    login = intranet_client.get_current_user(token=matches[1])
+    user_data = intranet_client.get_user(token=matches[1])
   except IntranetInvalidToken:
     flash('The autologin link is invalid or has expired.')
     return render_intranet()
@@ -49,9 +49,23 @@ def intranet():
     flash('Can\'t get user info from intranet.')
     return render_intranet()
 
-  if login != current_user.intra_uid:
+  if user_data['login'] != current_user.intra_uid:
     flash('This isn\'t your intranet account.')
     return render_intranet()
+
+
+  # start testing for write permissions
+  # in order to do this, we test if we can modify user profile
+  # no worry, we're feeding the intranet the same infos he'd given us earlier
+  try:
+    intranet_client.set_user_profile(user_data['userinfo'], user_data['login'], token=matches[1])
+  except IntranetReadOnly:
+    current_user.intra_token_rw = False
+  except:
+    flash('Can\'t get user info from intranet.')
+    return render_intranet()
+  else:
+    current_user.intra_token_rw = True
 
   # intranet user is same as logged in user, saving token
   current_user.intra_token = matches[1]

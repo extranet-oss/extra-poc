@@ -44,13 +44,21 @@ class IntranetForbidden(IntranetError):
   def __str__(self):
     return self.message
 
+class IntranetReadOnly(IntranetError):
+  def __init__(self, message):
+    self.message = message
+
+  def __str__(self):
+    return self.message
+
 EXCEPTION_MAP = {
   'Your authentication code does not exist or has expired. Please connect again with your regular user name and details.': IntranetInvalidToken,
   'No unit corresponding to your request': IntranetNotFound,
   'This activity doesn\'t exist': IntranetNotFound,
   'Page not found': IntranetNotFound,
   'This event does not exist or was removed': IntranetNotFound,
-  'You are not allowed to access other students\' information': IntranetForbidden
+  'You are not allowed to access other students\' information': IntranetForbidden,
+  'Vous êtes connecté en tant que parent, seul l\'étudiant peut effectuer cette action': IntranetReadOnly
 }
 
 class Intranet():
@@ -189,7 +197,7 @@ class Intranet():
 
   def get_picture(self, login=None):
     if login is None:
-      login = self.current_user()
+      login = self.get_current_user(**kwargs)
 
     url = 'https://cdn.local.epitech.eu/userprofil/{}.bmp'.format(login.split('@')[0])
     r = requests.get(url, stream=True, headers={
@@ -206,6 +214,29 @@ class Intranet():
       return Image.open(r.raw)
     except IOError:
       raise IntranetInvalidResponse('Invalid image recieved')
+
+  def set_user_profile(self, data, login=None, **kwargs):
+    if login is None:
+      login = self.get_current_user(**kwargs)
+
+    # We need to format those stupid parameters
+    payload = {}
+    for name, info in data.items():
+      payload['{}[name]'.format(name)] = name
+      payload['{}[value]'.format(name)] = info['value']
+
+      if 'public' in info and info['public']:
+        payload['{}[public]'.format(name)] = 'on'
+      else:
+        payload['{}[public]'.format(name)] = ''
+
+      if 'adm' in info and info['adm']:
+        payload['{}[adm]'.format(name)] = 'on'
+      else:
+        payload['{}[adm]'.format(name)] = ''
+    kwargs['data'] = payload
+
+    return self.post('user/{}/edit/save'.format(login), **kwargs)
 
 client = Intranet(app)
 

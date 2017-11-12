@@ -49,6 +49,7 @@ class User(Intra):
   # intranet user info
   intra_uid = db.Column(db.String(320), index=True, unique=True, nullable=False)
   intra_token = db.Column(db.String(40))
+  intra_token_rw = db.Column(db.Boolean, default=False)
   ctime = db.Column(db.DateTime)
   mtime = db.Column(db.DateTime)
 
