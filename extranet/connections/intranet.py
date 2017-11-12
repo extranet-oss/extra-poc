@@ -2,17 +2,56 @@ from functools import wraps
 from flask import url_for, request, redirect, abort
 from flask_login import current_user
 import requests
+import json
+from PIL import Image
 
 from extranet import app
 from extranet.constants import APP_NAME, APP_VERSION
 from extranet.utils import external_url, version_tostring
 
-class IntranetException(RuntimeError):
+class IntranetError(RuntimeError):
   def __init__(self, message):
     self.message = message
 
   def __str__(self):
     return self.message
+
+class IntranetInvalidResponse(IntranetError):
+  def __init__(self, message):
+    self.message = message
+
+  def __str__(self):
+    return self.message
+
+class IntranetInvalidToken(IntranetError):
+  def __init__(self, message):
+    self.message = message
+
+  def __str__(self):
+    return self.message
+
+class IntranetNotFound(IntranetError):
+  def __init__(self, message):
+    self.message = message
+
+  def __str__(self):
+    return self.message
+
+class IntranetForbidden(IntranetError):
+  def __init__(self, message):
+    self.message = message
+
+  def __str__(self):
+    return self.message
+
+EXCEPTION_MAP = {
+  'Your authentication code does not exist or has expired. Please connect again with your regular user name and details.': IntranetInvalidToken,
+  'No unit corresponding to your request': IntranetNotFound,
+  'This activity doesn\'t exist': IntranetNotFound,
+  'Page not found': IntranetNotFound,
+  'This event does not exist or was removed': IntranetNotFound,
+  'You are not allowed to access other students\' information': IntranetForbidden
+}
 
 class Intranet():
 
@@ -37,15 +76,15 @@ class Intranet():
   def init_app(self, app):
     app.before_request(self._before_request)
 
-  def get(self, *args, **kwargs):
+  def get(self, url, **kwargs):
     kwargs['method'] = 'GET'
-    return self.request(*args, **kwargs)
+    return self.request(url, **kwargs)
 
-  def post(self, *args, **kwargs):
+  def post(self, url, **kwargs):
     kwargs['method'] = 'POST'
-    return self.request(*args, **kwargs)
+    return self.request(url, **kwargs)
 
-  def request(self, url, data=None, format='json', method='GET', token=None):
+  def request(self, url, data=None, format='json', method='GET', token=None, raw=False):
 
     headers = {
       'User-Agent': self.useragent
@@ -63,7 +102,34 @@ class Intranet():
 
     params['format'] = format
 
-    return requests.request(method, target, params=params, data=data, headers=headers, cookies=self.cookies)
+    r = requests.request(method, target, params=params, data=data, headers=headers, cookies=self.cookies)
+
+    if not r.ok:
+      error_message = 'HTTP/{} "{}" recieved'.format(r.status_code, r.reason)
+
+      try:
+        data = r.json()
+
+        if 'error' in data:
+          error_message = data['error']
+        elif 'message' in data:
+          error_message = data['message']
+
+        if error_message in EXCEPTION_MAP:
+          raise EXCEPTION_MAP[error_message](error_message)
+        else:
+          raise IntranetError(error_message)
+      except ValueError:
+          raise IntranetError(error_message)
+
+    if not raw:
+      if format == 'json':
+        try:
+          return r.json()
+        except ValueError:
+          raise IntranetInvalidResponse('Invalid JSON recieved')
+
+    return r.text
 
   def token_getter(self, f):
     self._token_getter = f
@@ -78,7 +144,7 @@ class Intranet():
 
     token = self._token_getter()
     if token is None:
-      raise IntranetException('No token available')
+      raise IntranetError('No token available')
 
     return token
 
@@ -88,6 +154,59 @@ class Intranet():
 
     if request.endpoint != self.token_view and request.endpoint not in self.token_view_overrides and self._has_token_checker() is False:
       return redirect(url_for(self.token_view, next=request.full_path))
+
+  def get_locations(self, **kwargs):
+    kwargs['raw'] = True
+    js = self.get('location.js', **kwargs)
+
+    # find bounds of json object inside js code
+    start = js.find('{')
+    if start == -1:
+      start = 0
+    end = js.find('};')
+    if end != -1:
+      end += 1
+
+    # extract json data
+    try:
+      return json.loads(js[start:end])
+    except:
+      raise IntranetInvalidResponse('Invalid JSON recieved')
+
+  def get_current_user(self, **kwargs):
+    data = self.get('user/', **kwargs)
+    return data['login']
+
+  def get_user(self, login=None, **kwargs):
+    url = 'user'
+    if login is not None:
+      url = 'user/{}/'.format(login)
+
+    return self.get(url, **kwargs)
+
+  def get_all_users(self, **kwargs):
+    kwargs['data'] = {'search': 'jordan'}
+    return self.get('complete/user', **kwargs)
+
+  def get_picture(self, login=None):
+    if login is None:
+      login = self.current_user()
+
+    url = 'https://cdn.local.epitech.eu/userprofil/{}.bmp'.format(login.split('@')[0])
+    r = requests.get(url, stream=True, headers={
+      'User-Agent': self.useragent
+    })
+    if not r.ok:
+      if r.status_code == 404:
+        raise IntranetNotFound('Picture not found')
+      else:
+        raise IntranetError('HTTP/{} "{}" recieved'.format(r.status_code, r.reason))
+
+    r.raw.decode_content = True
+    try:
+      return Image.open(r.raw)
+    except IOError:
+      raise IntranetInvalidResponse('Invalid image recieved')
 
 client = Intranet(app)
 
