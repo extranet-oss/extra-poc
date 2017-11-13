@@ -34,7 +34,7 @@ class User(Intra):
 
   # profile pic
   picture_id = db.Column(db.Integer, db.ForeignKey('picture.id'))
-  picture = db.relationship('Picture', lazy=True, backref=db.backref('user', lazy=True), cascade='all, delete-orphan', single_parent=True)
+  picture = db.relationship('Picture', lazy='joined', backref=db.backref('user', lazy=True), cascade='all, delete-orphan', single_parent=True)
 
   # registered user info
   rtime = db.Column(db.DateTime)
@@ -226,22 +226,22 @@ class UserAcademic(Intra):
 
   # school
   school_id = db.Column(db.Integer, db.ForeignKey('school.id'), nullable=False)
-  school = db.relationship('School', lazy=True, backref=db.backref('user_academics', lazy=True), uselist=False)
+  school = db.relationship('School', lazy='joined', backref=db.backref('user_academics', lazy=True), uselist=False)
   school_year = db.Column(db.Integer, nullable=False)
 
   # current status
   promotion_id = db.Column(db.Integer, db.ForeignKey('promotion.id'), nullable=False)
-  promotion = db.relationship('Promotion', lazy=True, backref=db.backref('user_academics', lazy=True), uselist=False)
+  promotion = db.relationship('Promotion', lazy='joined', backref=db.backref('user_academics', lazy=True), uselist=False)
   course_id = db.Column(db.Integer, db.ForeignKey('course.id'), nullable=False)
-  course = db.relationship('Course', lazy=True, backref=db.backref('user_academics', lazy=True), uselist=False)
+  course = db.relationship('Course', lazy='joined', backref=db.backref('user_academics', lazy=True), uselist=False)
   semester = db.Column(db.Integer, nullable=False)
   year_of_study = db.Column(db.Integer, nullable=False)
 
   # location
   country_id = db.Column(db.Integer, db.ForeignKey('country.id'), nullable=False)
-  country = db.relationship('Country', lazy=True, backref=db.backref('user_academics', lazy=True), uselist=False)
+  country = db.relationship('Country', lazy='joined', backref=db.backref('user_academics', lazy=True), uselist=False)
   city_id = db.Column(db.Integer, db.ForeignKey('city.id'), nullable=False)
-  city = db.relationship('City', lazy=True, backref=db.backref('user_academics', lazy=True), uselist=False)
+  city = db.relationship('City', lazy='joined', backref=db.backref('user_academics', lazy=True), uselist=False)
 
   # user performance
   credits = db.Column(db.Integer, nullable=False)

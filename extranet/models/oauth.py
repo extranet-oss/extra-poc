@@ -22,7 +22,7 @@ class OauthApp(Dated):
 
   # app picture
   picture_id = db.Column(db.Integer, db.ForeignKey('picture.id'))
-  picture = db.relationship('Picture', lazy=True, backref=db.backref('app', lazy=True), cascade='all, delete-orphan', single_parent=True)
+  picture = db.relationship('Picture', lazy='joined', backref=db.backref('app', lazy=True), cascade='all, delete-orphan', single_parent=True)
 
   # app owner
   owner_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
