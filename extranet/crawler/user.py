@@ -116,7 +116,10 @@ def update(user):
       user.academic.city = City.query.filter_by(intra_code=user_data['location']).first()
 
       user.academic.credits = user_data['credits']
-      user.academic.gpa = int(float(user_data['gpa'][0]['gpa']) * 100)
+      try:
+        user.academic.gpa = int(float(user_data['gpa'][0]['gpa']) * 100)
+      except ValueError:
+        user.academic.gpa = 0
       # we're not supporting this for now.
       # intranet is too autistic, i need to calculate those values on my own
       # so i need to be able to crawl modules, spices, etc
