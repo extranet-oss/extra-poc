@@ -30,7 +30,7 @@
 <h3>Profile</h3>
 <strong>public:</strong> {{current_user.public}}<br>
 {% for info in current_user.custom_infos %}
-<strong>{{info.type}} (public: {{info.public}}):</strong> {{info.value}}<br>
+<strong>{{info.type.name}} (public: {{info.public}}):</strong> {{info.value}}<br>
 {% endfor %}
 <hr>
 <h3>Groups</h3>
