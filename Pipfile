@@ -1,0 +1,29 @@
+[[source]]
+
+url = "https://pypi.python.org/simple"
+verify_ssl = true
+name = "pypi"
+
+
+[packages]
+
+Flask = "*"
+Flask-Cache = "*"
+Flask-OAuthlib = "*"
+Flask-SQLAlchemy = "*"
+Flask-Login = "*"
+redis = "*"
+mysqlclient = "*"
+Pillow = "*"
+python-slugify = "*"
+Werkzeug = "*"
+SQLAlchemy = "*"
+
+
+[dev-packages]
+
+
+
+[requires]
+
+python_version = "3.6"
