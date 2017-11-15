@@ -18,9 +18,9 @@ usm.refresh_view = 'auth.refresh'
 # configure intranet module
 intranet_client.token_view = 'auth.intranet'
 intranet_client.token_view_overrides += [
-  'auth.refresh',
-  'auth.login',
-  'auth.logout',
-  'auth.office365',
-  'auth.office365_authorized'
+   'auth.refresh',
+   'auth.login',
+   'auth.logout',
+   'auth.office365',
+   'auth.office365_authorized'
 ]

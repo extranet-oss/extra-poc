@@ -6,10 +6,10 @@ import extranet.models.picture
 import extranet.models.school
 
 __all__ = [
-  'user',
-  'oauth',
-  'location',
-  'crawler',
-  'picture',
-  'school'
+    'user',
+    'oauth',
+    'location',
+    'crawler',
+    'picture',
+    'school'
 ]

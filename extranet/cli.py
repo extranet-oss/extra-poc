@@ -1,27 +1,31 @@
 from extranet import app, db, cache
 from extranet.crawler import locations, all_users
 
+
 @app.cli.command('createdb')
 def createdb():
-  print('Creating database...')
-  db.create_all()
-  print('Done.')
+    print('Creating database...')
+    db.create_all()
+    print('Done.')
+
 
 @app.cli.command('dropdb')
 def dropdb():
-  print('Dropping database...')
-  db.drop_all()
-  print('Done.')
+    print('Dropping database...')
+    db.drop_all()
+    print('Done.')
+
 
 @app.cli.command('clearcache')
 def clearcache():
-  print('Clearing cache...')
-  cache.clear()
-  print('Done.')
+    print('Clearing cache...')
+    cache.clear()
+    print('Done.')
+
 
 @app.cli.command('crawl')
 def crawl():
-  print('Updating data...')
-  locations.update()
-  all_users.update()
-  print('Done.')
+    print('Updating data...')
+    locations.update()
+    all_users.update()
+    print('Done.')

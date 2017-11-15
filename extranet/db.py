@@ -10,9 +10,10 @@ db = SQLAlchemy(app)
 #
 # We're not using this method because variable is set multiple times
 # through a single connection
-#@event.listens_for(db.engine, 'engine_connect')
-#def connect_event(connection, branch):
-#  connection.execute('SET time_zone = "+00:00";')
+# @event.listens_for(db.engine, 'engine_connect')
+# def connect_event(connection, branch):
+#     connection.execute('SET time_zone = "+00:00";')
+
 
 # Set UTC timezone for every connections
 #
@@ -21,4 +22,4 @@ db = SQLAlchemy(app)
 # (methods could change)
 @event.listens_for(db.engine, 'connect')
 def connect_event(dbapi_connection, connection_record):
-  dbapi_connection.query('SET time_zone = "+00:00";')
+    dbapi_connection.query('SET time_zone = "+00:00";')

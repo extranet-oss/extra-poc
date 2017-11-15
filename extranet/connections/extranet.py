@@ -13,13 +13,16 @@ provider = OAuth2Provider(app)
 # configure stores
 bind_sqlalchemy(provider, db.session, user=User, client=OauthApp, token=OauthToken)
 
+
 def current_user_func():
-  return User.query.get(current_user.id)
+    return User.query.get(current_user.id)
+
+
 bind_cache_grant(app, provider, current_user_func)
 
 scopes = {
-  'user.read': {
-    'description_brief': "Read your profile",
-    'description': "This app will be able to read your basic profile information, such as names, promotion or city"
-  }
+    'user.read': {
+        'description_brief': 'Read your profile',
+        'description': 'This app will be able to read your basic profile information, such as names, promotion or city'
+    }
 }

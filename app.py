@@ -1,1 +1,0 @@
-from extranet import app as application
