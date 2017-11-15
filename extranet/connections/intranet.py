@@ -168,7 +168,7 @@ class Intranet():
         if self._has_token_checker is None or self.token_view is None:
             return
 
-        if request.endpoint != self.token_view and request.endpoint not in self.token_view_overrides and not self._has_token_checker():
+        if request.endpoint != self.token_view and request.endpoint not in self.token_view_overrides and self._has_token_checker() is not None and not self._has_token_checker():
             return redirect(url_for(self.token_view, next=request.full_path))
 
     def get_locations(self, **kwargs):
