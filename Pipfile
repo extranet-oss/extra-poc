@@ -14,10 +14,10 @@ Flask-SQLAlchemy = "*"
 Flask-Login = "*"
 redis = "*"
 mysqlclient = "*"
-Pillow = "*"
 python-slugify = "*"
 Werkzeug = "*"
 SQLAlchemy = "*"
+Pillow-SIMD = "*"
 
 
 [dev-packages]
