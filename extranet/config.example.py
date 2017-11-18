@@ -28,3 +28,11 @@ CACHE_KEY_PREFIX = 'extranet'
 
 # intra crawler config
 CRAWLER_DEFAULT_TOKEN = 'Intranet token'
+
+# api rate limit
+RATELIMIT_STORAGE_URL = 'Redis url'
+RATELIMIT_KEY_PREFIX = 'extranet-api'
+RATELIMIT_STRATEGY = 'moving-window'
+RATELIMIT_HEADERS_ENABLED = True
+RATELIMIT_HEADER_RETRY_AFTER_VALUE = 'http-date'
+RATELIMIT_API = 'Api ratelimit policy'

@@ -7,17 +7,18 @@ name = "pypi"
 
 [packages]
 
-Flask = "*"
-Flask-Cache = "*"
-Flask-OAuthlib = "*"
-Flask-SQLAlchemy = "*"
-Flask-Login = "*"
+flask = "*"
+flask-cache = "*"
+flask-oauthlib = "*"
+flask-sqlalchemy = "*"
+flask-login = "*"
 redis = "*"
 mysqlclient = "*"
 python-slugify = "*"
-Werkzeug = "*"
-SQLAlchemy = "*"
-Pillow-SIMD = "*"
+werkzeug = "*"
+sqlalchemy = "*"
+pillow-simd = "*"
+flask-limiter = "*"
 
 
 [dev-packages]
