@@ -19,6 +19,7 @@ werkzeug = "*"
 sqlalchemy = "*"
 pillow-simd = "*"
 flask-limiter = "*"
+flask-cors = "*"
 
 
 [dev-packages]
