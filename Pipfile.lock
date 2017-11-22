@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "6653972d618e28f2f156b7f0e2ff4994c52c518d8455dbbc53258970a43d9440"
+            "sha256": "6a2ad2f45f89b0f4c314b76db5d831a00f0bf789534260466c88bd50c2eec140"
         },
         "host-environment-markers": {
             "implementation_name": "cpython",
@@ -49,6 +49,13 @@
                 "sha256:f15516df478d5a56180fbf80e68f206010e6d160fc39fa508b65e035fd75130b"
             ],
             "version": "==6.7"
+        },
+        "ecdsa": {
+            "hashes": [
+                "sha256:40d002cf360d0e035cf2cb985e1308d41aaa087cbfc135b2dc2d844296ea546c",
+                "sha256:64cf1ee26d1cde3c73c6d7d107f835fed7c6a2904aef9eac223d57ad800c43fa"
+            ],
+            "version": "==0.13"
         },
         "flask": {
             "hashes": [
@@ -100,6 +107,12 @@
                 "sha256:5971b9852b5888655f11db634e87725a9031e170f37c0ce7851cf83497f56e53"
             ],
             "version": "==2.3.2"
+        },
+        "future": {
+            "hashes": [
+                "sha256:e39ced1ab767b5936646cedba8bcce582398233d6a627067d4c6a454c90cfedb"
+            ],
+            "version": "==0.16.0"
         },
         "idna": {
             "hashes": [
@@ -161,6 +174,19 @@
                 "sha256:29bb005a5d49664649b717d2b0cb410fc6e4a01d99506f602da8fcef52a05bc6"
             ],
             "version": "==4.3.0.post0"
+        },
+        "pycrypto": {
+            "hashes": [
+                "sha256:f2ce1e989b272cfcb677616763e0a2e7ec659effa67a88aa92b3a65528f60a3c"
+            ],
+            "version": "==2.6.1"
+        },
+        "python-jose": {
+            "hashes": [
+                "sha256:fed56224664af0ebc3947853f1bed23b5609f90c7b02e3dce5ef5757d0301664",
+                "sha256:18e19f200f37a8ee6247921572807cc63ee034abdbf6854df1ae7c1f505cabcc"
+            ],
+            "version": "==1.4.0"
         },
         "python-slugify": {
             "hashes": [

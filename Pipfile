@@ -20,6 +20,7 @@ sqlalchemy = "*"
 pillow-simd = "*"
 flask-limiter = "*"
 flask-cors = "*"
+python-jose = "*"
 
 
 [dev-packages]

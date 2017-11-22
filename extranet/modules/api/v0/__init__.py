@@ -1,22 +1,22 @@
 # import dependencies
 from flask import Blueprint, request
-
 from flask_limiter import Limiter
-from flask_cors import CORS
+from flask_limiter.util import get_remote_address
+
 from extranet import app
+from extranet.modules.api.v0.api import Api
 
-limiter = Limiter(app)
+limiter = Limiter(app, key_func=get_remote_address)
 
-@limiter.request_filter
-def ip_whitelist():
-    return request.remote_addr == "127.0.0.1"
+#@limiter.request_filter
+#def ip_whitelist():
+#    return request.remote_addr == "127.0.0.1"
 
 # define blueprint
 bp = Blueprint('api_v0', __name__,
                url_prefix='/api/v0')
 
-limiter.shared_limit(app.config['RATELIMIT_API'], 'api-v0')(bp)
-CORS(bp, origins='*', send_wildcard=True)
+api = Api(bp, limiter)
 
 # load controllers
-import extranet.modules.api.v0.controllers
+import extranet.modules.api.v0.endpoints
