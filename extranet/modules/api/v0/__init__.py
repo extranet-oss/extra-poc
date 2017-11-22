@@ -19,4 +19,5 @@ bp = Blueprint('api_v0', __name__,
 api = Api(bp, limiter)
 
 # load controllers
+import extranet.modules.api.v0.schemas
 import extranet.modules.api.v0.endpoints

@@ -21,6 +21,7 @@ pillow-simd = "*"
 flask-limiter = "*"
 flask-cors = "*"
 python-jose = "*"
+marshmallow-jsonapi = "*"
 
 
 [dev-packages]
