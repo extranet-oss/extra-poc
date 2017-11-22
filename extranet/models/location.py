@@ -18,9 +18,9 @@ class Country(Intra):
     slug = db.Column(db.String(255), index=True, unique=True, nullable=False)
     name = db.Column(db.String(255), nullable=False)
 
-    cities = db.relationship('City', lazy=True, backref=db.backref('country', lazy=True), cascade='all, delete-orphan')
-    buildings = db.relationship('Building', lazy=True, backref=db.backref('country', lazy=True), cascade='all, delete-orphan')
-    rooms = db.relationship('Room', lazy=True, backref=db.backref('country', lazy=True), cascade='all, delete-orphan')
+    cities = db.relationship('City', lazy=True, backref=db.backref('country', lazy='joined'), cascade='all, delete-orphan')
+    buildings = db.relationship('Building', lazy=True, backref=db.backref('country', lazy='joined'), cascade='all, delete-orphan')
+    rooms = db.relationship('Room', lazy=True, backref=db.backref('country', lazy='joined'), cascade='all, delete-orphan')
 
     def __init__(self, key, name):
         self.uuid = str(uuid.uuid4())
@@ -43,8 +43,8 @@ class City(Intra):
 
     country_id = db.Column(db.Integer, db.ForeignKey('country.id'), nullable=False)
 
-    buildings = db.relationship('Building', lazy=True, backref=db.backref('city', lazy=True), cascade='all, delete-orphan')
-    rooms = db.relationship('Room', lazy=True, backref=db.backref('city', lazy=True), cascade='all, delete-orphan')
+    buildings = db.relationship('Building', lazy=True, backref=db.backref('city', lazy='joined'), cascade='all, delete-orphan')
+    rooms = db.relationship('Room', lazy=True, backref=db.backref('city', lazy='joined'), cascade='all, delete-orphan')
 
     def __init__(self, key, name, country):
         self.uuid = str(uuid.uuid4())
@@ -70,7 +70,7 @@ class Building(Intra):
     country_id = db.Column(db.Integer, db.ForeignKey('country.id'), nullable=False)
     city_id = db.Column(db.Integer, db.ForeignKey('city.id'), nullable=False)
 
-    rooms = db.relationship('Room', lazy=True, backref=db.backref('building', lazy=True), cascade='all, delete-orphan')
+    rooms = db.relationship('Room', lazy=True, backref=db.backref('building', lazy='joined'), cascade='all, delete-orphan')
 
     def __init__(self, key, name, country, city):
         self.uuid = str(uuid.uuid4())
