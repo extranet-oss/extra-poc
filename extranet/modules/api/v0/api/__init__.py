@@ -9,7 +9,7 @@ import re
 
 from extranet import app, db
 from extranet.models.user import User
-from extranet.models.oauth import OauthApp
+from extranet.models.oauth import OauthApp, OauthToken
 from extranet.connections.extranet import provider
 from extranet.utils import external_url
 from .utils import default_auth_data
@@ -39,6 +39,7 @@ class Api():
 
         limiter.shared_limit(app.config['RATELIMIT_API'], self.name, key_func=self._limiter_key_func)(self._blueprint)
 
+    # getting client_id from authorization. should be fast without verification
     def _limiter_key_func(self):
         authorization = request.headers.get('Authorization')
         if authorization:
@@ -68,9 +69,9 @@ class Api():
 
                 # default oauth bearer token auth: client access to user data
                 else:
-                    valid, token_data = provider.verify_request(None)
+                    token_data = OauthToken.query.filter_by(access_token=token).first()
 
-                    if valid:
+                    if token_data is not None:
                         return f'client:{token_data.client.client_id}'
 
         return get_remote_address()
