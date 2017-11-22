@@ -97,7 +97,7 @@ class Api():
 
     def make_endpoint_func(self, func, auth=True, scopes=None):
         @wraps(func)
-        def endpoint_func(*args):
+        def endpoint_func(*args, **kwargs):
             # Check authentication if needed
             if auth:
                 valid, req = self.verify_authentication(scopes)
@@ -108,7 +108,7 @@ class Api():
                 _request_ctx_stack.top.api_auth = req
 
             # call view func
-            output = func(*args)
+            output = func(*args, **kwargs)
             data = output
             code = 200
 
