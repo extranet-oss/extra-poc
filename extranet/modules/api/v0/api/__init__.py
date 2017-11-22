@@ -41,38 +41,12 @@ class Api():
 
     # getting client_id from authorization. should be fast without verification
     def _limiter_key_func(self):
-        authorization = request.headers.get('Authorization')
-        if authorization:
-            auth_type, token = authorization.split(' ', maxsplit=1)
-
-            # basic auth: client_id:client_secret as base64
-            if auth_type == 'Basic':
-                try:
-                    token = urlsafe_b64decode(token).decode()
-                except binascii.Error:
-                    return get_remote_address()
-
-                app_id, app_secret = token.split(':', maxsplit=1)
-                return f'client:{app_id}'
-
-            elif auth_type == 'Bearer':
-                # jwt auth: user token with all scopes
-                if jwt_regex.match(token) is not None:
-                    try:
-                        token_data = jwt.get_unverified_claims(token)
-                    except JWTError:
-                        return get_remote_address()
-                    if 'sub' not in token_data:
-                        return get_remote_address()
-
-                    return f'user:{token_data["sub"]}'
-
-                # default oauth bearer token auth: client access to user data
-                else:
-                    token_data = OauthToken.query.filter_by(access_token=token).first()
-
-                    if token_data is not None:
-                        return f'client:{token_data.client.client_id}'
+        valid, data = self.verify_authentication()
+        if valid:
+            if data['type'] == 'user':
+                return f'user:{data["user"].uuid}'
+            elif data['type'] == 'basic_client' or data['type'] == 'oauth_client':
+                return f'client:{data["client"].client_id}'
 
         return get_remote_address()
 
