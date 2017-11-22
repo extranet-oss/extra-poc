@@ -6,6 +6,7 @@ from jose import jwt, JWTError
 from base64 import urlsafe_b64decode
 import binascii
 import re
+from functools import wraps
 
 from extranet import app, db
 from extranet.models.user import User
@@ -50,52 +51,52 @@ class Api():
 
         return get_remote_address()
 
-    def get(self, view, rule, **options):
+    def get(self, rule, **options):
         def decorator(f):
             options['method'] = 'GET'
-            self.endpoint(view, rule, f, **options)
+            self.endpoint(rule, f, **options)
             return f
         return decorator
 
-    def post(self, view, rule, **options):
+    def post(self, rule, **options):
         def decorator(f):
             options['method'] = 'POST'
-            self.endpoint(view, rule, f, **options)
+            self.endpoint(rule, f, **options)
             return f
         return decorator
 
-    def put(self, view, rule, **options):
+    def put(self, rule, **options):
         def decorator(f):
             options['method'] = 'PUT'
-            self.endpoint(view, rule, f, **options)
+            self.endpoint(rule, f, **options)
             return f
         return decorator
 
-    def patch(self, view, rule, **options):
+    def patch(self, rule, **options):
         def decorator(f):
             options['method'] = 'PATCH'
-            self.endpoint(view, rule, f, **options)
+            self.endpoint(rule, f, **options)
             return f
         return decorator
 
-    def delete(self, view, rule, **options):
+    def delete(self, rule, **options):
         def decorator(f):
             options['method'] = 'DELETE'
-            self.endpoint(view, rule, f, **options)
+            self.endpoint(rule, f, **options)
             return f
         return decorator
 
-    def endpoint(self, view, rule, func, method='GET', auth=True, scopes=None):
+    def endpoint(self, rule, func, method='GET', view=None, auth=True, scopes=None):
 
         endpoint_func = self.make_endpoint_func(func, auth, scopes)
 
-        name = f'{method.lower()}-{view}'
         route_options = {
             'methods': [method]
         }
-        self._blueprint.add_url_rule(rule, name, endpoint_func, **route_options)
+        self._blueprint.add_url_rule(rule, view, endpoint_func, **route_options)
 
     def make_endpoint_func(self, func, auth=True, scopes=None):
+        @wraps(func)
         def endpoint_func(*args):
             # Check authentication if needed
             if auth:
@@ -208,7 +209,5 @@ class Api():
 
         return data
 
-    def url_for(self, view, method='GET', **kwargs):
-        name = f'.{method.lower()}-{view}'
-
-        return external_url(url_for(name, **kwargs))
+    def url_for(self, view, **kwargs):
+        return external_url(url_for(f'.{view}', **kwargs))

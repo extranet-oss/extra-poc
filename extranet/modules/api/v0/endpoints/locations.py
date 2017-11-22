@@ -1,8 +1,8 @@
 from extranet.modules.api.v0 import api
 from extranet.models.location import City
 
-@api.get('cities', '/cities/')
-def index():
+@api.get('/cities/')
+def get_cities():
     cities = []
     for city in City.query:
         cities.append({
@@ -13,6 +13,6 @@ def index():
     return {
         'data': cities,
         'links': {
-            'self': api.url_for('cities')
+            'self': api.url_for('get_cities')
         }
     }
