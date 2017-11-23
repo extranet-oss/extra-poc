@@ -16,7 +16,7 @@ limiter = Limiter(app, key_func=get_remote_address)
 bp = Blueprint('api_v0', __name__,
                url_prefix='/api/v0')
 
-api = Api(bp, limiter)
+api = Api(app, bp, limiter)
 
 # load controllers
 import extranet.modules.api.v0.schemas

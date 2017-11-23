@@ -8,9 +8,9 @@ import binascii
 import re
 from functools import wraps
 
-from extranet import app, db
+from extranet import app
 from extranet.models.user import User
-from extranet.models.oauth import OauthApp, OauthToken
+from extranet.models.oauth import OauthApp
 from extranet.connections.extranet import provider
 from extranet.utils import external_url
 from .utils import default_auth_data
@@ -21,9 +21,13 @@ class Api():
 
     media_type = 'application/vnd.api+json'
 
-    def __init__(self, blueprint=None, limiter=None):
+    def __init__(self, app=None, blueprint=None, limiter=None):
         self._blueprint = None
         self._limiter = None
+        self._app = None
+
+        if app is not None:
+            self.init_app(app)
 
         if blueprint is not None:
             self.init_blueprint(blueprint)
@@ -31,16 +35,33 @@ class Api():
         if limiter is not None:
             self.init_limiter(limiter)
 
+    def init_app(self, app):
+        self._app = app
+
+        if self._blueprint is not None:
+            self.init_blueprint(self._blueprint)
+
+        if self._limiter is not None:
+            self.init_limiter(self._limiter)
+
     def init_blueprint(self, blueprint):
         self._blueprint = blueprint
-        self.name = f'{app.config["DOMAIN"]}:{blueprint.name}'
+
+        if self._app is not None:
+            self.name = f'{self._app.config["DOMAIN"]}:{blueprint.name}'
+        else:
+            self.name = blueprint.name
+
+        if self._limiter is not None:
+            self.init_limiter(self._limiter)
 
         CORS(blueprint, origins='*', send_wildcard=True)
 
     def init_limiter(self, limiter):
         self._limiter = limiter
 
-        limiter.shared_limit(app.config['RATELIMIT_API'], self.name, key_func=self._limiter_key_func)(self._blueprint)
+        if self._app is not None and self._blueprint is not None:
+            limiter.shared_limit(self._app.config['RATELIMIT_API'], self.name, key_func=self._limiter_key_func)(self._blueprint)
 
     # getting client_id from authorization. should be fast without verification
     def _limiter_key_func(self):
@@ -169,8 +190,8 @@ class Api():
                 # jwt auth: user token with all scopes
                 if jwt_regex.match(token) is not None:
                     try:
-                        token_data = jwt.decode(token, app.config['SECRET_KEY'],
-                                                algorithms='HS256', audience=app.config['DOMAIN'], issuer=self.name)
+                        token_data = jwt.decode(token, self._app.config['SECRET_KEY'],
+                                                algorithms='HS256', audience=self._app.config['DOMAIN'], issuer=self.name)
                     except JWTError:
                         return False, data
 
