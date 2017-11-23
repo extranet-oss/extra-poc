@@ -35,7 +35,10 @@ class FakeHandler(dict):
         if code is None:
             return ()
 
-        exc_class, exc_code = app._get_exc_class_and_code(code)
+        try:
+            exc_class, exc_code = app._get_exc_class_and_code(code)
+        except KeyError:
+            return default
 
         return {exc_class: self.errorhandler}
 
