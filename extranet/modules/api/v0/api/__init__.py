@@ -1,4 +1,4 @@
-from flask import jsonify, g, url_for, request, _request_ctx_stack
+from flask import jsonify, g, url_for, request, _request_ctx_stack, make_response
 from flask_limiter.util import get_remote_address
 from flask_cors import CORS
 from slugify import slugify
@@ -18,6 +18,8 @@ from .utils import default_auth_data
 jwt_regex = re.compile('^[a-zA-Z0-9\\-_]+?\\.[a-zA-Z0-9\\-_]+?\\.[a-zA-Z0-9\\-_]+?$')
 
 class Api():
+
+    media_type = 'application/vnd.api+json'
 
     def __init__(self, blueprint=None, limiter=None):
         self._blueprint = None
@@ -98,12 +100,23 @@ class Api():
     def make_endpoint_func(self, func, auth=True, scopes=None):
         @wraps(func)
         def endpoint_func(*args, **kwargs):
+            # check request headers validity
+            if 'Content-Type' in request.headers and request.headers['Content-Type'].strip() != self.media_type:
+                # 415 Unsupported Media Type
+                return self.make_response({'errors':[{'title': 'Unsupported Media Type'}]}, 415)
+
+            if 'Accept' in request.headers:
+                for media in request.headers['Accept'].split(','):
+                    if self.media_type in media and media.strip() != self.media_type:
+                        # 406 Not Acceptable
+                        return self.make_response({'errors':[{'title': 'Not Acceptable'}]}, 406)
+
             # Check authentication if needed
             if auth:
                 valid, req = self.verify_authentication(scopes)
 
                 if not valid:
-                    return jsonify(self.make_jsonapi_response({'errors':[{'title': 'Unauthorized'}]})), 401
+                    return self.make_response({'errors':[{'title': 'Unauthorized'}]}, 401)
 
                 _request_ctx_stack.top.api_auth = req
 
@@ -119,8 +132,13 @@ class Api():
                     pass
 
             # return formatted jsonapi response
-            return jsonify(self.make_jsonapi_response(data)), code
+            return self.make_response(data, code)
         return endpoint_func
+
+    def make_response(self, data, code=200):
+        resp = make_response(jsonify(self.normalize_jsonapi_data(data)), code)
+        resp.headers['Content-Type'] = self.media_type
+        return resp
 
     def verify_authentication(self, scopes=None):
         authorization = request.headers.get('Authorization')
@@ -181,7 +199,7 @@ class Api():
 
         return False, data
 
-    def make_jsonapi_response(self, data):
+    def normalize_jsonapi_data(self, data):
 
         data['jsonapi'] = {
             'version': '1.0'
