@@ -1,4 +1,4 @@
-from flask import jsonify, g, url_for, request, _request_ctx_stack, make_response
+from flask import jsonify, g, url_for, request, _request_ctx_stack, make_response, abort
 from flask_limiter.util import get_remote_address
 from flask_cors import CORS
 from slugify import slugify
@@ -126,20 +126,21 @@ class Api():
             if request.method in ('POST', 'PATCH'):
                 if 'Content-Type' in request.headers and request.headers['Content-Type'].strip() != self.media_type:
                     # 415 Unsupported Media Type
-                    return self.make_response({'errors':[{'title': 'Unsupported Media Type'}]}, 415)
+                    abort(415)
 
             if 'Accept' in request.headers:
                 for media in request.headers['Accept'].split(','):
                     if self.media_type in media and media.strip() != self.media_type:
                         # 406 Not Acceptable
-                        return self.make_response({'errors':[{'title': 'Not Acceptable'}]}, 406)
+                        abort(406)
 
             # Check authentication if needed
             if auth:
                 valid, req = self.verify_authentication(scopes)
 
                 if not valid:
-                    return self.make_response({'errors':[{'title': 'Unauthorized'}]}, 401)
+                    # 401 Unauthorized
+                    abort(401)
 
                 _request_ctx_stack.top.api_auth = req
 
