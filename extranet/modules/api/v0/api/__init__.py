@@ -123,9 +123,10 @@ class Api():
         @wraps(func)
         def endpoint_func(*args, **kwargs):
             # check request headers validity
-            if 'Content-Type' in request.headers and request.headers['Content-Type'].strip() != self.media_type:
-                # 415 Unsupported Media Type
-                return self.make_response({'errors':[{'title': 'Unsupported Media Type'}]}, 415)
+            if request.method in ('POST', 'PATCH'):
+                if 'Content-Type' in request.headers and request.headers['Content-Type'].strip() != self.media_type:
+                    # 415 Unsupported Media Type
+                    return self.make_response({'errors':[{'title': 'Unsupported Media Type'}]}, 415)
 
             if 'Accept' in request.headers:
                 for media in request.headers['Accept'].split(','):
