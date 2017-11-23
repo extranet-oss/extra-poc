@@ -20,6 +20,9 @@ from extranet.usm import usm
 # load cache
 cache = Cache(app)
 
+# load error handler
+from extranet.errorhandler import errorhandler
+
 # load external connections
 import extranet.connections
 

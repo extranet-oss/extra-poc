@@ -8,7 +8,7 @@ import binascii
 import re
 from functools import wraps
 
-from extranet import app
+from extranet import app, errorhandler
 from extranet.models.user import User
 from extranet.models.oauth import OauthApp
 from extranet.connections.extranet import provider
@@ -56,6 +56,7 @@ class Api():
             self.init_limiter(self._limiter)
 
         CORS(blueprint, origins='*', send_wildcard=True)
+        errorhandler.register_error_handler(self._blueprint, self.error_handler)
 
     def init_limiter(self, limiter):
         self._limiter = limiter
@@ -250,3 +251,10 @@ class Api():
 
     def url_for(self, view, **kwargs):
         return external_url(url_for(f'.{view}', **kwargs))
+
+    def error_handler(self, e):
+        return self.make_response({'errors':[{
+            'status': e.code,
+            'title': e.name,
+            'detail': e.description
+        }]}, e.code)
