@@ -7,7 +7,8 @@ class CountrySchema(Schema):
     slug = fields.Str()
     name = fields.Str()
 
-    cities = Relationship(
+    child_cities = Relationship(
+        attribute="cities",
         related_view='get_country_cities',
         related_view_kwargs={'identifier': '<uuid>'},
         many=True,
@@ -18,7 +19,8 @@ class CountrySchema(Schema):
         default=None
     )
 
-    buildings = Relationship(
+    child_buildings = Relationship(
+        attribute="buildings",
         related_view='get_country_buildings',
         related_view_kwargs={'identifier': '<uuid>'},
         many=True,
@@ -29,7 +31,8 @@ class CountrySchema(Schema):
         default=None
     )
 
-    rooms = Relationship(
+    child_rooms = Relationship(
+        attribute="rooms",
         related_view='get_country_rooms',
         related_view_kwargs={'identifier': '<uuid>'},
         many=True,
@@ -53,7 +56,8 @@ class CitySchema(Schema):
     slug = fields.Str()
     name = fields.Str()
 
-    country = Relationship(
+    parent_country = Relationship(
+        attribute="country",
         related_view='get_country',
         related_view_kwargs={'identifier': '<country.uuid>'},
         include_resource_linkage=True,
@@ -63,7 +67,8 @@ class CitySchema(Schema):
         default=None
     )
 
-    buildings = Relationship(
+    child_buildings = Relationship(
+        attribute="buildings",
         related_view='get_city_buildings',
         related_view_kwargs={'identifier': '<uuid>'},
         many=True,
@@ -74,7 +79,8 @@ class CitySchema(Schema):
         default=None
     )
 
-    rooms = Relationship(
+    child_rooms = Relationship(
+        attribute="rooms",
         related_view='get_city_rooms',
         related_view_kwargs={'identifier': '<uuid>'},
         many=True,
@@ -98,7 +104,8 @@ class BuildingSchema(Schema):
     slug = fields.Str()
     name = fields.Str()
 
-    country = Relationship(
+    parent_country = Relationship(
+        attribute="country",
         related_view='get_country',
         related_view_kwargs={'identifier': '<country.uuid>'},
         include_resource_linkage=True,
@@ -108,7 +115,8 @@ class BuildingSchema(Schema):
         default=None
     )
 
-    city = Relationship(
+    parent_city = Relationship(
+        attribute="city",
         related_view='get_city',
         related_view_kwargs={'identifier': '<city.uuid>'},
         include_resource_linkage=True,
@@ -118,7 +126,8 @@ class BuildingSchema(Schema):
         default=None
     )
 
-    rooms = Relationship(
+    child_rooms = Relationship(
+        attribute="rooms",
         related_view='get_building_rooms',
         related_view_kwargs={'identifier': '<uuid>'},
         many=True,
@@ -142,7 +151,8 @@ class RoomSchema(Schema):
     slug = fields.Str()
     name = fields.Str()
 
-    country = Relationship(
+    parent_country = Relationship(
+        attribute="country",
         related_view='get_country',
         related_view_kwargs={'identifier': '<country.uuid>'},
         include_resource_linkage=True,
@@ -152,7 +162,8 @@ class RoomSchema(Schema):
         default=None
     )
 
-    city = Relationship(
+    parent_city = Relationship(
+        attribute="city",
         related_view='get_city',
         related_view_kwargs={'identifier': '<city.uuid>'},
         include_resource_linkage=True,
@@ -162,7 +173,8 @@ class RoomSchema(Schema):
         default=None
     )
 
-    building = Relationship(
+    parent_building = Relationship(
+        attribute="building",
         related_view='get_building',
         related_view_kwargs={'identifier': '<building.uuid>'},
         include_resource_linkage=True,
