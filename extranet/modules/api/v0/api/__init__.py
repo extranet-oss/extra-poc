@@ -1,4 +1,4 @@
-from flask import jsonify, g, url_for, request, _request_ctx_stack, make_response, abort
+from flask import jsonify, g, request, _request_ctx_stack, make_response, abort
 from flask_limiter.util import get_remote_address
 from flask_cors import CORS
 from slugify import slugify
@@ -12,7 +12,6 @@ from extranet import app, errorhandler
 from extranet.models.user import User
 from extranet.models.oauth import OauthApp
 from extranet.connections.extranet import provider
-from extranet.utils import external_url
 from .utils import default_auth_data
 
 jwt_regex = re.compile('^[a-zA-Z0-9\\-_]+?\\.[a-zA-Z0-9\\-_]+?\\.[a-zA-Z0-9\\-_]+?$')
@@ -250,9 +249,6 @@ class Api():
                 }
 
         return data
-
-    def url_for(self, view, **kwargs):
-        return external_url(url_for(f'.{view}', **kwargs))
 
     def error_handler(self, e):
         return self.make_response({'errors':[{

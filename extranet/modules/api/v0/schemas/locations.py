@@ -1,5 +1,6 @@
 from marshmallow_jsonapi import fields
-from marshmallow_jsonapi.flask import Relationship, Schema
+
+from extranet.modules.api.v0.api.marshmallow import Relationship, Schema
 
 class CountrySchema(Schema):
     id = fields.Str(attribute="uuid", dump_only=True)
@@ -7,7 +8,7 @@ class CountrySchema(Schema):
     name = fields.Str()
 
     cities = Relationship(
-        related_view='.get_country_cities',
+        related_view='get_country_cities',
         related_view_kwargs={'identifier': '<uuid>'},
         many=True,
         include_resource_linkage=True,
@@ -18,7 +19,7 @@ class CountrySchema(Schema):
     )
 
     buildings = Relationship(
-        related_view='.get_country_buildings',
+        related_view='get_country_buildings',
         related_view_kwargs={'identifier': '<uuid>'},
         many=True,
         include_resource_linkage=True,
@@ -29,7 +30,7 @@ class CountrySchema(Schema):
     )
 
     rooms = Relationship(
-        related_view='.get_country_rooms',
+        related_view='get_country_rooms',
         related_view_kwargs={'identifier': '<uuid>'},
         many=True,
         include_resource_linkage=True,
@@ -41,9 +42,9 @@ class CountrySchema(Schema):
 
     class Meta:
         type_ = 'country'
-        self_view = '.get_country'
+        self_view = 'get_country'
         self_view_kwargs = {'identifier': '<id>'}
-        self_view_many = '.list_countries'
+        self_view_many = 'list_countries'
         strict = True
 
 
@@ -53,7 +54,7 @@ class CitySchema(Schema):
     name = fields.Str()
 
     country = Relationship(
-        related_view='.get_country',
+        related_view='get_country',
         related_view_kwargs={'identifier': '<country.uuid>'},
         include_resource_linkage=True,
         type_='country',
@@ -63,7 +64,7 @@ class CitySchema(Schema):
     )
 
     buildings = Relationship(
-        related_view='.get_city_buildings',
+        related_view='get_city_buildings',
         related_view_kwargs={'identifier': '<uuid>'},
         many=True,
         include_resource_linkage=True,
@@ -74,7 +75,7 @@ class CitySchema(Schema):
     )
 
     rooms = Relationship(
-        related_view='.get_city_rooms',
+        related_view='get_city_rooms',
         related_view_kwargs={'identifier': '<uuid>'},
         many=True,
         include_resource_linkage=True,
@@ -86,9 +87,9 @@ class CitySchema(Schema):
 
     class Meta:
         type_ = 'city'
-        self_view = '.get_city'
+        self_view = 'get_city'
         self_view_kwargs = {'identifier': '<id>'}
-        self_view_many = '.list_cities'
+        self_view_many = 'list_cities'
         strict = True
 
 
@@ -98,7 +99,7 @@ class BuildingSchema(Schema):
     name = fields.Str()
 
     country = Relationship(
-        related_view='.get_country',
+        related_view='get_country',
         related_view_kwargs={'identifier': '<country.uuid>'},
         include_resource_linkage=True,
         type_='country',
@@ -108,7 +109,7 @@ class BuildingSchema(Schema):
     )
 
     city = Relationship(
-        related_view='.get_city',
+        related_view='get_city',
         related_view_kwargs={'identifier': '<city.uuid>'},
         include_resource_linkage=True,
         type_='city',
@@ -118,7 +119,7 @@ class BuildingSchema(Schema):
     )
 
     rooms = Relationship(
-        related_view='.get_building_rooms',
+        related_view='get_building_rooms',
         related_view_kwargs={'identifier': '<uuid>'},
         many=True,
         include_resource_linkage=True,
@@ -130,9 +131,9 @@ class BuildingSchema(Schema):
 
     class Meta:
         type_ = 'building'
-        self_view = '.get_building'
+        self_view = 'get_building'
         self_view_kwargs = {'identifier': '<id>'}
-        self_view_many = '.list_buildings'
+        self_view_many = 'list_buildings'
         strict = True
 
 
@@ -142,7 +143,7 @@ class RoomSchema(Schema):
     name = fields.Str()
 
     country = Relationship(
-        related_view='.get_country',
+        related_view='get_country',
         related_view_kwargs={'identifier': '<country.uuid>'},
         include_resource_linkage=True,
         type_='country',
@@ -152,7 +153,7 @@ class RoomSchema(Schema):
     )
 
     city = Relationship(
-        related_view='.get_city',
+        related_view='get_city',
         related_view_kwargs={'identifier': '<city.uuid>'},
         include_resource_linkage=True,
         type_='city',
@@ -162,7 +163,7 @@ class RoomSchema(Schema):
     )
 
     building = Relationship(
-        related_view='.get_building',
+        related_view='get_building',
         related_view_kwargs={'identifier': '<building.uuid>'},
         include_resource_linkage=True,
         type_='building',
@@ -173,7 +174,7 @@ class RoomSchema(Schema):
 
     class Meta:
         type_ = 'room'
-        self_view = '.get_room'
+        self_view = 'get_room'
         self_view_kwargs = {'identifier': '<id>'}
-        self_view_many = '.list_rooms'
+        self_view_many = 'list_rooms'
         strict = True
