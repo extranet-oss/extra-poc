@@ -151,6 +151,9 @@ class RoomSchema(Schema):
     slug = fields.Str()
     name = fields.Str()
 
+    seats = fields.Int()
+    types = fields.List(fields.Str(attribute="name"))
+
     parent_country = Relationship(
         attribute="country",
         related_view='get_country',
