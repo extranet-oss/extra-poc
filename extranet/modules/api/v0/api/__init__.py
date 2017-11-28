@@ -122,16 +122,7 @@ class Api():
         @wraps(func)
         def endpoint_func(*args, **kwargs):
             # check request headers validity
-            if request.method in ('POST', 'PATCH'):
-                if 'Content-Type' in request.headers and request.headers['Content-Type'].strip() != self.media_type:
-                    # 415 Unsupported Media Type
-                    abort(415)
-
-            if 'Accept' in request.headers:
-                for media in request.headers['Accept'].split(','):
-                    if self.media_type in media and media.strip() != self.media_type:
-                        # 406 Not Acceptable
-                        abort(406)
+            self.check_request_headers()
 
             # Check authentication if needed
             if auth:
@@ -256,3 +247,15 @@ class Api():
             'title': e.name,
             'detail': e.description
         }]}, e.code)
+
+    def check_request_headers(self):
+        if request.method in ('POST', 'PATCH'):
+            if 'Content-Type' in request.headers and request.headers['Content-Type'].strip() != self.media_type:
+                # 415 Unsupported Media Type
+                abort(415)
+
+        if 'Accept' in request.headers:
+            for media in request.headers['Accept'].split(','):
+                if self.media_type in media and media.strip() != self.media_type:
+                    # 406 Not Acceptable
+                    abort(406)
