@@ -19,6 +19,14 @@ jwt_regex = re.compile('^[a-zA-Z0-9\\-_]+?\\.[a-zA-Z0-9\\-_]+?\\.[a-zA-Z0-9\\-_]
 class Api():
 
     media_type = 'application/vnd.api+json'
+    params = ['include', 'fields', 'sort', 'page', 'filter']
+    params_schema = {
+        'include': [list, str],
+        'fields': [dict, list, str],
+        'sort': [list, str],
+        'page': [dict, int],
+        'filter': [str]
+    }
 
     def __init__(self, app=None, blueprint=None, limiter=None):
         self._blueprint = None
@@ -109,20 +117,27 @@ class Api():
             return f
         return decorator
 
-    def endpoint(self, rule, func, method='GET', view=None, auth=True, scopes=None):
+    def endpoint(self, rule, func, method='GET', view=None, auth=True, scopes=None, **kwargs):
 
-        endpoint_func = self.make_endpoint_func(func, auth, scopes)
+        qs_params = {}
+        for param in self.params:
+            qs_params[param] = kwargs.get(param, True)
+
+        endpoint_func = self.make_endpoint_func(func, auth, scopes, qs_params)
 
         route_options = {
             'methods': [method]
         }
         self._blueprint.add_url_rule(rule, view, endpoint_func, **route_options)
 
-    def make_endpoint_func(self, func, auth=True, scopes=None):
+    def make_endpoint_func(self, func, auth=True, scopes=None, qs_params=[]):
         @wraps(func)
         def endpoint_func(*args, **kwargs):
             # check request headers validity
             self.check_request_headers()
+
+            # parse compatible querystring parameters
+            self.check_request_params(qs_params)
 
             # Check authentication if needed
             if auth:
@@ -259,3 +274,66 @@ class Api():
                 if self.media_type in media and media.strip() != self.media_type:
                     # 406 Not Acceptable
                     abort(406)
+
+    def check_request_params(self, qs_params):
+        parsed = {}
+        for param in self.params:
+            parsed[param] = None
+
+        # This function process values recursively according to the params_schema
+        def process_value(current, param, key, value, level):
+
+            # check for unwanted keys
+            if self.params_schema[param][level] != dict and key is not None:
+                # no key applicable
+                abort(400)
+
+            # parse types
+            if self.params_schema[param][level] == list:
+                splited = []
+                for elem in value.split(','):
+                    splited.append(process_value(None, param, None, elem, level + 1))
+                return splited
+
+            elif self.params_schema[param][level] == dict:
+                if current is None:
+                    current = {}
+                if key is None:
+                    # No key for dict
+                    abort(400)
+
+                current[key] = process_value(None, param, None, value, level + 1)
+                return current
+
+            else:
+                try:
+                    return self.params_schema[param][level](value.strip())
+                except ValueError:
+                    # wrong data format
+                    abort(400)
+
+
+        # verify & parse request params
+        for param, value in request.args.items():
+
+            # find dict key if applicable
+            key = None
+            if '[' in param:
+                key_start = param.index('[')
+                key_end = param.find(']')
+                if key_end == -1 or key_end != len(param) - 1:
+                    # parse error
+                    abort(400)
+
+                key = param[key_start + 1:key_end]
+                param = param[:key_start]
+
+            if param in self.params:
+
+                if not qs_params[param]:
+                    # parameter not supported
+                    abort(400)
+
+                parsed[param] = process_value(parsed[param], param, key, value, 0)
+
+        _request_ctx_stack.top.api_params = parsed
